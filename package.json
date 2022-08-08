@@ -1,0 +1,24 @@
+{
+  "name": "cip-26-cardano-off-chain-metadata",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/atixlabs/cip-26-cardano-off-chain-metadata.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/atixlabs/cip-26-cardano-off-chain-metadata/issues"
+  },
+  "homepage": "https://gitlab.com/atixlabs/cip-26-cardano-off-chain-metadata#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.3",
+    "@commitlint/config-conventional": "^17.0.3",
+    "husky": "^8.0.1"
+  }
+}
