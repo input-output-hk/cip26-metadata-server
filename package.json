@@ -17,8 +17,8 @@
   },
   "homepage": "https://gitlab.com/atixlabs/cip-26-cardano-off-chain-metadata#readme",
   "devDependencies": {
-    "@commitlint/cli": "^17.0.3",
-    "@commitlint/config-conventional": "^17.0.3",
-    "husky": "^8.0.1"
+    "@commitlint/cli": "17.0.3",
+    "@commitlint/config-conventional": "17.0.3",
+    "husky": "8.0.1"
   }
 }
