@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npm run eslint && npm run prettier:list-different",
+    "prettier:list-different": "prettier --list-different src/",
+    "prettier": "prettier --write src/",
+    "eslint": "eslint src/"
   },
   "repository": {
     "type": "git",
@@ -19,6 +23,14 @@
   "devDependencies": {
     "@commitlint/cli": "17.0.3",
     "@commitlint/config-conventional": "17.0.3",
-    "husky": "8.0.1"
-  }
+    "@typescript-eslint/eslint-plugin": "5.32.0",
+    "@typescript-eslint/parser": "5.33.0",
+    "eslint": "8.21.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-simple-import-sort": "7.0.0",
+    "eslint-plugin-sonarjs": "0.15.0",
+    "husky": "8.0.1",
+    "prettier": "2.7.1"
+  },
+  "dependencies": {}
 }
