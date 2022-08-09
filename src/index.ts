@@ -2,12 +2,14 @@ import MetadataHandler from './server/handlers/metadata';
 import buildServer from './server/server';
 import Environment from "./config/environment"
 
+import { configure, Handlers } from './server/handlers'
+
 const environment: Environment = new Environment();
 const start = () => {
   let server;
   let handlers;
   try {
-    handlers = new MetadataHandler({ db: null });
+    handlers = configure() //new MetadataHandler({ db: null });
     server = buildServer(handlers, environment);
     server.listen(environment.port, () => {
       console.log(`⚡️[server]: Server is running at http://${environment.host}:${environment.port}/metadata`);
