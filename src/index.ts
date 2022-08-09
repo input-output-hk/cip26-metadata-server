@@ -1,12 +1,21 @@
-import WebServer from "./api/WebServer"
+import MetadataHandler from './server/handlers/metadata';
+import buildServer from './server/server';
+import Environment from "./config/environment"
 
-async function startServer() {
+const environment: Environment = new Environment();
+const start = () => {
+  let server;
+  let handlers;
   try {
-    const webServer = new WebServer()
-    webServer.boot()
-  } catch (e: any) {
-    console.log(`Unhandled error: ${e.message}\n${e.stack}`)
+    handlers = new MetadataHandler({ db: null });
+    server = buildServer(handlers, environment);
+    server.listen(environment.port, () => {
+      console.log(`⚡️[server]: Server is running at http://${environment.host}:${environment.port}/metadata`);
+    });
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
   }
-}
+};
 
-startServer()
+start();
