@@ -1,4 +1,4 @@
-import { Express, Request, Response } from 'express'
+import { Request, Response } from 'express'
 
 export interface StatusHandler {
     getStatus(
@@ -6,11 +6,6 @@ export interface StatusHandler {
         res: Response
     ): Response<{ up: boolean }>;
 }
-
-
-// const getStatus = (req: Request, res: Response) => {
-//     return res.send(true);
-// }
 
 const configure = (): StatusHandler => ({
     getStatus: (req: Request, res: Response) => {
