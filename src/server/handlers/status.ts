@@ -1,16 +1,13 @@
-import { Request, Response } from 'express'
+import { Request, Response } from 'express';
 
 export interface StatusHandler {
-    getStatus(
-        req: Request,
-        res: Response
-    ): Response<{ up: boolean }>;
+  getStatus(request: Request, response: Response): Response<{ up: boolean }>;
 }
 
 const configure = (): StatusHandler => ({
-    getStatus: (req: Request, res: Response) => {
-        return res.send(true);
-    }
+  getStatus: (request: Request, response: Response) => {
+    return response.send(true);
+  },
 });
 
 export default configure;
