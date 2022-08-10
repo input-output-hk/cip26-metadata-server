@@ -1,0 +1,36 @@
+{
+  "env": {
+    "commonjs": true,
+    "es2020": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:sonarjs/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:unicorn/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": { "ecmaVersion": 2020 },
+  "plugins": ["@typescript-eslint", "sonarjs", "simple-import-sort"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "import/order": [
+      "error",
+      {
+        "newlines-between": "always",
+        "groups": [
+          ["builtin", "external"],
+          ["parent", "sibling", "index"]
+        ]
+      }
+    ],
+    "curly": ["error", "all"],
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+    "sort-vars": "error"
+  }
+}
