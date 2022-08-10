@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-export default class Config {
+export default class Environment {
     env: string | undefined
     port: string | undefined
     host: string | undefined

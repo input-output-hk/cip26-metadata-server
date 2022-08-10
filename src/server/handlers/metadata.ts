@@ -1,7 +1,7 @@
 import createError from "http-errors"
 import httpStatus from "http-status"
 
-export default class MetadataHttp {
+export default class MetadataHandler {
     db: any
 
     constructor(db: any) {

@@ -1,12 +1,23 @@
-import WebServer from "./api/WebServer"
+import { Express } from 'express'
+import buildServer from './server/server';
+import Environment from "./config/environment"
 
-async function startServer() {
+import { configure, Handlers } from './server/handlers'
+
+const environment: Environment = new Environment();
+const start = () => {
+  let server: Express;
+  let handlers: Handlers;
   try {
-    const webServer = new WebServer()
-    webServer.boot()
-  } catch (e: any) {
-    console.log(`Unhandled error: ${e.message}\n${e.stack}`)
+    handlers = configure()
+    server = buildServer(handlers, environment);
+    server.listen(environment.port, () => {
+      console.log(`⚡️[server]: Server is running at http://${environment.host}:${environment.port}/`);
+    });
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
   }
-}
+};
 
-startServer()
+start();

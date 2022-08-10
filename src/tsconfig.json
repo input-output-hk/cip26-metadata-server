@@ -6,16 +6,16 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist",
+    "outDir": "../dist",
     "types": [
       "node",
       "jest"
     ]
   },
   "include": [
-    "src/**/*.ts"
+    "**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "../node_modules"
   ]
 }
