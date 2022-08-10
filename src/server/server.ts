@@ -2,9 +2,9 @@ import bodyParser from 'body-parser';
 import timeout from 'connect-timeout';
 import express, { Express } from 'express';
 
-import Environment from '../config/environment';
-import { Logger } from '../logger/logger';
+import Environment from './config/environment';
 import { Handlers } from './handlers';
+import { Logger } from './logger/logger';
 import buildRoutes from './routes/router';
 
 const buildServer = (handlers: Handlers, environment: Environment, logger: Logger): Express => {

@@ -1,8 +1,8 @@
 import { Express } from 'express';
 
-import Environment from './config/environment';
-import { Logger } from './logger/logger';
+import Environment from './server/config/environment';
 import { configure, Handlers } from './server/handlers';
+import { Logger } from './server/logger/logger';
 import buildServer from './server/server';
 
 const start = () => {
@@ -20,6 +20,7 @@ const start = () => {
       );
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error);
     // eslint-disable-next-line unicorn/no-process-exit
     process.exit(1);

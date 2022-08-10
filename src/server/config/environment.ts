@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 
-import { ENV_VAR } from '../types/environment';
+import { ENV_VAR } from '../../types/environment';
+
 dotenv.config();
 
 export default class Environment {

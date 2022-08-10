@@ -1,4 +1,4 @@
-import { Logger } from '../../logger/logger';
+import { Logger } from '../logger/logger';
 import statusHandler, { StatusHandler } from './status';
 
 export interface Handlers {
