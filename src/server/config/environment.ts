@@ -1,11 +1,15 @@
 import dotenv from 'dotenv';
+
+import { ENV_VAR } from '../../types/environment';
+
 dotenv.config();
 
 export default class Environment {
-  env: string | undefined;
-  port: string | undefined;
-  host: string | undefined;
-  connectionString: string | undefined;
+  env: ENV_VAR;
+  port: ENV_VAR;
+  host: ENV_VAR;
+  loggerLevel: ENV_VAR;
+  connectionString: ENV_VAR;
 
   constructor() {
     this.env = process.env.NODE_ENV;
