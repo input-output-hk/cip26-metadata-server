@@ -18,10 +18,8 @@ stages:
 
 test:
   image: docker.atixlabs.com/node:16.16.0-alpine
-
   variables:
     NODE_ENV: test
-
   stage: test
   script:
     - npm install
