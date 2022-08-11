@@ -2,6 +2,7 @@
   "name": "cip-26-cardano-off-chain-metadata",
   "version": "1.0.0",
   "description": "",
+  "dockerImage": "docker.atixlabs.com/dapp",
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
@@ -12,7 +13,9 @@
     "lint": "npm run eslint && npm run prettier:list-different",
     "prettier:list-different": "prettier --list-different \"{src,tests}/**/*.{ts,tsx,json}\"",
     "prettier": "prettier --write \"{src,tests}/**/*.{ts,tsx,json}\"",
-    "eslint": "eslint \"{src,tests}/**/*.{ts,tsx,json}\""
+    "eslint": "eslint \"{src,tests}/**/*.{ts,tsx,json}\"",
+    "docker:build": "docker build -t $npm_package_dockerImage:$npm_package_version-$CI_COMMIT_SHORT_SHA .",
+    "docker:push": "docker push $npm_package_dockerImage:$npm_package_version-$CI_COMMIT_SHORT_SHA"
   },
   "repository": {
     "type": "git",
