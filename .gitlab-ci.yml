@@ -13,8 +13,18 @@ cache:
     - node_modules/
 
 stages:
+  - lint
   - test
   - package
+
+lint:
+  image: docker.atixlabs.com/node:16.16.0-alpine
+  stage: lint
+  script:
+    - npm ci
+    - npm run lint
+  except:
+    - schedules
 
 test:
   image: docker.atixlabs.com/node:16.16.0-alpine
@@ -22,9 +32,9 @@ test:
     NODE_ENV: test
   stage: test
   script:
-    - npm install
-    - npm run lint
+    - npm ci
     - npm run test:unit
+    - npm run test:integration
   except:
     - schedules
 
@@ -41,6 +51,5 @@ package:
     - npm run docker:push
   only:
     refs:
-      # Only run on develop, main
+      # Only run on develop
       - develop
-      - main
