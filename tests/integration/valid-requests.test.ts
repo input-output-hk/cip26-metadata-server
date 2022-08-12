@@ -7,11 +7,12 @@ import Environment from '../../src/server/config/environment';
 import { configure, Handlers } from '../../src/server/handlers';
 import { Logger } from '../../src/server/logger/logger';
 import buildServer from '../../src/server/server';
+import { config } from './config';
 
 let connection: Server, environment: Environment, server: Express;
 
 beforeAll(() => {
-  environment = new Environment();
+  environment = config;
   const logger = new Logger(environment.loggerLevel);
   const handlers: Handlers = configure(logger);
   server = buildServer(handlers, environment, logger);
