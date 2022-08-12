@@ -15,8 +15,8 @@ let connection: Server, database: Db, environment: Environment, server: Express,
 
 beforeAll(async () => {
   environment = new Environment();
-  console.log(environment);
   const logger = new Logger(environment.loggerLevel);
+  logger.log.info(JSON.stringify(environment));
   database = await connectToDatabase(environment, logger);
   services = configureServices(logger, database);
   const handlers: Handlers = configure(logger, services);
