@@ -10,7 +10,7 @@ import buildServer from '../../src/server/server';
 
 let connection: Server, environment: Environment, server: Express;
 
-beforeEach(() => {
+beforeAll(() => {
   environment = new Environment();
   const logger = new Logger(environment.loggerLevel);
   const handlers: Handlers = configure(logger);
@@ -21,11 +21,10 @@ beforeEach(() => {
 describe('GET /health', () => {
   test('service should be up & running', async () => {
     const response = await request(environment.connectionString).get('/health');
-    expect(response.statusCode).toEqual(httpStatus.OK);
-    expect(response.body).toBe(true);
+    expect(response).toMatchObject({ statusCode: httpStatus.OK, body: true });
   });
 });
 
-afterEach(() => {
+afterAll(() => {
   connection.close();
 });
