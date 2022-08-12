@@ -39,9 +39,8 @@ package:
     - npm cache clean --force
     - npm run docker:build
     - npm run docker:push
-
-  only:
-    refs:
-      # Only run on develop, main
-      - develop
-      - main
+  ## only:
+  ##   refs:
+  ##     # Only run on develop, main
+  ##     - develop
+  ##     - main
