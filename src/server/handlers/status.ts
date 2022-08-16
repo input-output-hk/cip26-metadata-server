@@ -10,7 +10,7 @@ const configure = (logger: Logger): StatusHandler => ({
   getStatus: (request: Request, response: Response) => {
     logger.log.info('[getStatus] Server status: UP');
 
-    return response.send(true);
+    return response.send({ up: true });
   },
 });
 
