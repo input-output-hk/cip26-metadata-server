@@ -34,7 +34,9 @@
     "http-errors": "2.0.0",
     "http-status": "1.5.2",
     "mongodb": "4.8.1",
-    "winston": "3.8.1"
+    "swagger-ui-express": "4.5.0",
+    "winston": "3.8.1",
+    "yamljs": "0.3.0"
   },
   "devDependencies": {
     "@commitlint/cli": "17.0.3",
