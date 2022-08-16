@@ -22,7 +22,7 @@ beforeAll(() => {
 describe('GET /health', () => {
   test('service should be up & running', async () => {
     const response = await request(environment.connectionString).get('/health');
-    expect(response).toMatchObject({ statusCode: httpStatus.OK, body: true });
+    expect(response).toMatchObject({ statusCode: httpStatus.OK, body: { up: true } });
   });
 });
 
