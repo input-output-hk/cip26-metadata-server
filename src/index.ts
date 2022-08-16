@@ -1,18 +1,26 @@
 import { Express } from 'express';
+import { Db } from 'mongodb';
 
 import Environment from './server/config/environment';
-import { configure, Handlers } from './server/handlers';
+import { connectToDatabase } from './server/db';
+import { configure as configureHandlers, Handlers } from './server/handlers';
 import { Logger } from './server/logger/logger';
 import buildServer from './server/server';
+import { configure as configureServices, Services } from './server/services';
 
-const start = () => {
+const start = async () => {
   const environment: Environment = new Environment();
   let server: Express;
   let handlers: Handlers;
+  let services: Services;
   let logger: Logger;
+  let database: Db;
+
   try {
     logger = new Logger(environment.loggerLevel);
-    handlers = configure(logger);
+    database = await connectToDatabase(environment, logger);
+    services = configureServices(logger, database);
+    handlers = configureHandlers(logger, services);
     server = buildServer(handlers, environment, logger);
     server.listen(environment.port, () => {
       logger.log.info(

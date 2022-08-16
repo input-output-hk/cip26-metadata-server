@@ -43,6 +43,14 @@ package:
   services:
     - docker:19.03.1-dind
   stage: package
+  variables:
+    PORT: $PORT
+    HOST: $HOST
+    LOGGER_LEVEL: $LOGGER_LEVEL
+    DB_PASS: $DB_PASS
+    DB_USERNAME: $DB_USERNAME
+    DB_CLUSTER: $DB_CLUSTER
+    DB_NAME: $DB_NAME
   script:
     - apk add docker git
     - docker login -u gitlabci -p $CI_JOB_TOKEN $CI_REGISTRY
