@@ -1,20 +1,24 @@
 import { Express } from 'express';
 import httpStatus from 'http-status';
+import { Db } from 'mongodb';
 import { Server } from 'node:http';
 import request from 'supertest';
 
 import Environment from '../../src/server/config/environment';
+import { connectToDatabase } from '../../src/server/db';
 import { configure, Handlers } from '../../src/server/handlers';
 import { Logger } from '../../src/server/logger/logger';
 import buildServer from '../../src/server/server';
-import { config } from './config';
+import { configure as configureServices, Services } from '../../src/server/services';
 
-let connection: Server, environment: Environment, server: Express;
+let connection: Server, database: Db, environment: Environment, server: Express, services: Services;
 
-beforeAll(() => {
-  environment = config;
+beforeAll(async () => {
+  environment = new Environment();
   const logger = new Logger(environment.loggerLevel);
-  const handlers: Handlers = configure(logger);
+  database = await connectToDatabase(environment, logger);
+  services = configureServices(logger, database);
+  const handlers: Handlers = configure(logger, services);
   server = buildServer(handlers, environment, logger);
   connection = server.listen(environment.port);
 });
