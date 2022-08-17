@@ -6,6 +6,7 @@ import request from 'supertest';
 import Environment from '../../src/server/config/environment';
 import { configure, Handlers } from '../../src/server/handlers';
 import { Logger } from '../../src/server/logger/logger';
+import { buildMiddlewares, Middlewares } from '../../src/server/middlewares';
 import buildServer from '../../src/server/server';
 
 let connection: Server, environment: Environment, server: Express;
@@ -14,7 +15,8 @@ beforeAll(() => {
   environment = new Environment();
   const logger = new Logger(environment.loggerLevel);
   const handlers: Handlers = configure(logger);
-  server = buildServer(handlers, environment, logger);
+  const middlewares: Middlewares = buildMiddlewares(logger);
+  server = buildServer(handlers, middlewares, environment, logger);
   connection = server.listen(environment.port);
 });
 

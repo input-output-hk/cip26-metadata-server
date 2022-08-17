@@ -26,6 +26,8 @@
   },
   "homepage": "https://gitlab.com/atixlabs/cip-26-cardano-off-chain-metadata#readme",
   "dependencies": {
+    "ajv": "8.11.0",
+    "ajv-formats": "2.1.1",
     "body-parser": "1.20.0",
     "connect-timeout": "1.9.0",
     "express": "4.18.1",
