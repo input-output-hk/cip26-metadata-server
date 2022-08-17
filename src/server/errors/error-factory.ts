@@ -25,6 +25,10 @@ const errors = {
     internalCode: 'dbError',
     statusCode: 500,
   },
+  SUBJECT_EXISTS_ERROR: {
+    internalCode: 'subjectExistsError',
+    statusCode: 500,
+  },
 };
 
 const buildApiError = (
@@ -43,8 +47,12 @@ const databaseConnectionError: BuildApiErrorFunction = (message) =>
 
 const databaseError: BuildApiErrorFunction = (message) => buildApiError(errors.DB_ERROR, message);
 
+const subjectExistsError: BuildApiErrorFunction = (message) =>
+  buildApiError(errors.SUBJECT_EXISTS_ERROR, message);
+
 export const ErrorFactory = {
   unmappedError,
   databaseConnectionError,
   databaseError,
+  subjectExistsError,
 };
