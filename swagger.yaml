@@ -1,0 +1,28 @@
+openapi: 3.0.3
+info:
+  title: Cardano off-chain metadata - OpenAPI 3.0
+  version: 1.0.0
+  servers:
+    - url: https://localhost:8000/
+paths:
+  /health:
+    get:
+      summary: Server healthcheck
+      operationId: healthcheck
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Healthcheck'
+        '500':
+          description: Server unavailable
+components:
+  schemas:
+    Healthcheck:
+      type: object
+      properties:
+        up:
+          type: boolean
+          example: true
