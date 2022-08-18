@@ -1,4 +1,4 @@
-import Ajv, { ValidateFunction } from 'ajv';
+import Ajv from 'ajv';
 import { DataValidateFunction } from 'ajv/dist/types';
 import addFormats from 'ajv-formats';
 import { NextFunction, Request, Response } from 'express';
@@ -41,7 +41,6 @@ const validateBase16: DataValidateFunction = (value) => {
   return false;
 };
 
-let validateFunction: ValidateFunction;
 const getValidateFunction = () => {
   const ajv = new Ajv({ strict: false, allErrors: true });
   addFormats(ajv);
@@ -60,8 +59,7 @@ const getValidateFunction = () => {
     },
     errors: true,
   });
-  validateFunction = ajv.compile(schema);
-  return validateFunction;
+  return ajv.compile(schema);
 };
 
 const configure = (logger: Logger): SchemaValidatorMiddleware => {
@@ -73,6 +71,7 @@ const configure = (logger: Logger): SchemaValidatorMiddleware => {
         logger.log.info('[Middlewares][validateSchema] Successful json schema validation');
         return next();
       } else {
+        logger.log.error('[Middlewares][validateSchema] Errors found in json schema validation');
         return next(new ValidationError(validate.errors));
       }
     },
