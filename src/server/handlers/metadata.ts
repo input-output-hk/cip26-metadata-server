@@ -7,6 +7,11 @@ import { Services } from '../services';
 
 export interface MetadataHandler {
   createObject(request: Request, response: Response, next: NextFunction): Promise<Response | void>;
+  getObjectBySubject(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
 }
 
 const configure = (logger: Logger, services: Services): MetadataHandler => ({
@@ -33,6 +38,26 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
       return response.sendStatus(201);
     } catch (error) {
       logger.log.error('[Handler][createObject] Error creating metadata object');
+      return next(error);
+    }
+  },
+
+  getObjectBySubject: async (request, response, next) => {
+    const subject = 'test4';
+    try {
+      const object = await services.databaseService.getObject({ subject });
+      if (!object) {
+        logger.log.error(
+          `[Handlers][getObjectBySubject] Metadata object with subject ${subject} does not exists`
+        );
+        throw ErrorFactory.subjectExistsError(
+          'A metadata object with that subject does not exists'
+        );
+      }
+      delete object._id;
+      return response.status(200).send(metadataMappers.mapGetObjectBySubjectResponse(object));
+    } catch (error) {
+      logger.log.error('[Handler][getObjectBySubject] Error creating metadata object');
       return next(error);
     }
   },
