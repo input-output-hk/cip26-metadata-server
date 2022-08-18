@@ -1,3 +1,5 @@
+import { ErrorObject } from 'ajv';
+
 import { BuildApiErrorFunction } from '../../types/errors';
 
 export class ApiError extends Error {
@@ -9,6 +11,19 @@ export class ApiError extends Error {
 
     this.internalCode = internalCode;
     this.statusCode = statusCode;
+  }
+}
+
+export class ValidationError extends Error {
+  validationErrors: ErrorObject[];
+  internalCode: string;
+  statusCode: number;
+
+  constructor(validationErrors) {
+    super('');
+    this.validationErrors = validationErrors;
+    this.internalCode = 'JsonSchemaValidationError';
+    this.statusCode = 400;
   }
 }
 

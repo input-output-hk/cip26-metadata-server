@@ -11,9 +11,9 @@
     "test:integration": "jest tests/integration",
     "prepare": "husky install",
     "lint": "npm run eslint && npm run prettier:list-different",
-    "prettier:list-different": "prettier --list-different \"{src,tests}/**/*.{ts,tsx,json}\"",
-    "prettier": "prettier --write \"{src,tests}/**/*.{ts,tsx,json}\"",
-    "eslint": "eslint \"{src,tests}/**/*.{ts,tsx,json}\"",
+    "prettier:list-different": "prettier --list-different \"{src,tests}/**/*.{ts,tsx}\"",
+    "prettier": "prettier --write \"{src,tests}/**/*.{ts,tsx}\"",
+    "eslint": "eslint \"{src,tests}/**/*.{ts,tsx}\"",
     "docker:build": "docker build -t docker.atixlabs.com/dapp:$npm_package_version-$CI_COMMIT_SHORT_SHA .",
     "docker:push": "docker push docker.atixlabs.com/dapp:$npm_package_version-$CI_COMMIT_SHORT_SHA"
   },

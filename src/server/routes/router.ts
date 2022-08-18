@@ -5,6 +5,7 @@ import { Middlewares } from '../middlewares';
 
 const buildRoutes = (
   { statusHandler, metadataHandler }: Handlers,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   { schemaValidatorMiddleware }: Middlewares,
   server: Express
 ) => {
