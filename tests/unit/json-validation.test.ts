@@ -1,29 +1,26 @@
 /* eslint-disable sonarjs/no-duplicate-string */
-import Environment from '../../src/server/config/environment';
 import { Logger } from '../../src/server/logger/logger';
 import { buildMiddlewares, Middlewares } from '../../src/server/middlewares';
-
-const mockRequest = (body) => ({
-  body,
-});
-
-const mockResponse = {
-  status: jest.fn().mockReturnValue(true),
-  sendStatus: jest.fn().mockResolvedValue(true),
-  json: jest.fn().mockReturnValue(true),
-};
+import { mockRequest, mockResponse } from './mocks/express';
 
 let schemaValidator;
 beforeAll(async () => {
-  const environment = new Environment();
-  const logger = new Logger(environment.loggerLevel);
+  const logger = new Logger('info');
   const middlewares: Middlewares = buildMiddlewares(logger);
   schemaValidator = middlewares.schemaValidatorMiddleware;
 });
 
+let next;
+beforeEach(() => {
+  next = jest.fn();
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('Validate metadata object', () => {
   test('should validate that metadata object contains required property "subject" and any additional property must be an object', async () => {
-    const next = jest.fn();
     await schemaValidator.validateSchema(
       mockRequest({ no_subject: '', add_prop: '' }),
       mockResponse,
@@ -61,7 +58,6 @@ describe('Validate metadata object', () => {
   });
 
   test('should validate that subject cannot be empty and that each entry must have required properties: value, sequenceNumber, signatures', async () => {
-    const next = jest.fn();
     await schemaValidator.validateSchema(
       mockRequest({ subject: '', add_prop: {} }),
       mockResponse,
@@ -119,7 +115,6 @@ describe('Validate metadata object', () => {
       url: true,
       logo: 1,
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -228,7 +223,6 @@ describe('Validate metadata object', () => {
         extra_property: 'invalid',
       },
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -262,7 +256,6 @@ describe('Validate metadata object', () => {
   });
 
   test('should validate that negative sequenceNumber is invalid and that signature must have required properties: signature and publicKey', async () => {
-    const next = jest.fn();
     await schemaValidator.validateSchema(
       mockRequest({
         subject: 'sub',
@@ -312,7 +305,6 @@ describe('Validate metadata object', () => {
         signatures: { signature: '79a4601', publicKey: 'bc77d04' },
       },
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -350,7 +342,6 @@ describe('Validate metadata object', () => {
         },
       },
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -396,7 +387,6 @@ describe('Validate metadata object', () => {
         },
       },
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -421,7 +411,6 @@ describe('Validate well known property: policy', () => {
       subject: 'valid subject',
       policy: '666F6F626172',
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -442,7 +431,6 @@ describe('Validate well known property: policy', () => {
       policy:
         '1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901',
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -462,7 +450,6 @@ describe('Validate well known property: policy', () => {
       subject: 'valid subject',
       policy: 'This string is NOT encoded, This string is NOT encoded, This string is NOT encoded',
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -481,7 +468,6 @@ describe('Validate well known property: preimage', () => {
       subject: 'valid subject',
       preimage: {},
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -510,7 +496,6 @@ describe('Validate well known property: preimage', () => {
       subject: 'the subject',
       preimage: { alg: 1, msg: 2 },
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -548,7 +533,6 @@ describe('Validate well known property: preimage', () => {
       subject: 'the subject',
       preimage: { alg: 'sha1', msg: 'this is not encoded as base16' },
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -567,7 +551,6 @@ describe('Validate well known property: name', () => {
       subject: 'test',
       name: '',
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -588,7 +571,6 @@ describe('Validate well known property: name', () => {
       name: '123456789012345678901234567890123456789012345678901',
       description: '',
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -611,7 +593,6 @@ describe('Validate well known property: description', () => {
       description:
         '123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901',
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -633,7 +614,6 @@ describe('Validate well known property: ticker', () => {
       subject: 'ticker test',
       ticker: '1',
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -653,7 +633,6 @@ describe('Validate well known property: ticker', () => {
       subject: 'ticker test',
       ticker: '1234567890',
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -675,7 +654,6 @@ describe('Validate well known property: decimals', () => {
       subject: 'decimals test',
       decimals: 0,
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -696,7 +674,6 @@ describe('Validate well known property: decimals', () => {
       subject: 'decimals test',
       decimals: 20,
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -719,7 +696,6 @@ describe('Validate well known property: url', () => {
       subject: 'url test',
       url: 'http;',
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -739,7 +715,6 @@ describe('Validate well known property: url', () => {
       subject: 'url test',
       url: 'http://1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890_1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890',
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -761,7 +736,6 @@ describe('Validate well known property: logo', () => {
       subject: 'the logo',
       logo: 'invalid',
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
@@ -812,7 +786,6 @@ describe('Validate complex metadata objects', () => {
         },
       },
     };
-    const next = jest.fn();
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {

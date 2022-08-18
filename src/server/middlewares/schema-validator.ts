@@ -43,9 +43,6 @@ const validateBase16: DataValidateFunction = (value) => {
 
 let validateFunction: ValidateFunction;
 const getValidateFunction = () => {
-  if (validateFunction) {
-    return validateFunction;
-  }
   const ajv = new Ajv({ strict: false, allErrors: true });
   addFormats(ajv);
   ajv.removeKeyword('contentEncoding');
@@ -67,17 +64,19 @@ const getValidateFunction = () => {
   return validateFunction;
 };
 
-const configure = (logger: Logger): SchemaValidatorMiddleware => ({
-  validateSchema: (request: Request, response: Response, next: NextFunction) => {
-    logger.log.info('[validateSchema] Validating json schema');
-    const validate = getValidateFunction();
-    if (validate(request.body)) {
-      logger.log.info('[validateSchema] Successful json schema validation');
-      next();
-    } else {
-      next(new ValidationError(validate.errors));
-    }
-  },
-});
+const configure = (logger: Logger): SchemaValidatorMiddleware => {
+  const validate = getValidateFunction();
+  return {
+    validateSchema: (request: Request, response: Response, next: NextFunction) => {
+      logger.log.info('[Middlewares][validateSchema] Validating json schema');
+      if (validate(request.body)) {
+        logger.log.info('[Middlewares][validateSchema] Successful json schema validation');
+        return next();
+      } else {
+        return next(new ValidationError(validate.errors));
+      }
+    },
+  };
+};
 
 export default configure;
