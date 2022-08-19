@@ -6,14 +6,22 @@ import metadataMappers from '../mappers/metadata';
 import { Services } from '../services';
 
 export interface MetadataHandler {
-  createObject(request: Request, response: Response, next: NextFunction): Promise<Response | void>;
+  createObject(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<{ statusCode: number } | void>;
 }
 
 const configure = (logger: Logger, services: Services): MetadataHandler => ({
-  createObject: async (request: Request, response: Response, next: NextFunction) => {
-    const subject = request.body.subject;
-    logger.log.info('[Handlers][createObject] Creating or modifying metadata object');
+  createObject: async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<{ statusCode: number } | void> => {
     try {
+      const subject = request.body.subject;
+      logger.log.info('[Handlers][createObject] Creating or modifying metadata object');
       logger.log.info(`[Handlers][createObject] Getting metadata object with subject ${subject}`);
       const object = await services.databaseService.getObject({ subject });
       if (object) {
