@@ -9,5 +9,5 @@ RUN npm install
 # build
 WORKDIR /application
 RUN npm run build
-EXPOSE 8008
+EXPOSE 8080
 CMD npm run start
