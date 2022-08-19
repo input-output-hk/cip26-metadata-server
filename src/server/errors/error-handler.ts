@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { ApiError, ErrorFactory } from './error-factory';
+import { ApiError, ErrorFactory, ValidationError } from './error-factory';
 
 export const errorHandler = (
   error: Error,
@@ -13,6 +13,8 @@ export const errorHandler = (
       internalCode: error.internalCode,
       message: error.message,
     });
+  } else if (error instanceof ValidationError) {
+    response.status(error.statusCode).json(error.validationErrors);
   } else {
     const unmappedError = ErrorFactory.unmappedError(
       `An error occurred for request: ${error.message}`
