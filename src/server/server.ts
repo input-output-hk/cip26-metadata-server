@@ -23,13 +23,13 @@ const buildServer = (
   server.use(bodyParser.urlencoded({ extended: true }));
   server.use(timeout('30s'));
 
-  server.use(errorHandler);
   server.use((request, response, next) => {
     logger.log.info(`New request: ${request.method} ${request.path}`);
     return next();
   });
   server.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   buildRoutes(handlers, middlewares, server);
+  server.use(errorHandler);
   return server;
 };
 
