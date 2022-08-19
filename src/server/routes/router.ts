@@ -5,12 +5,11 @@ import { Middlewares } from '../middlewares';
 
 const buildRoutes = (
   { statusHandler, metadataHandler }: Handlers,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   { schemaValidatorMiddleware }: Middlewares,
   server: Express
 ) => {
   server.get('/health', statusHandler.getStatus);
-  server.get('/random', metadataHandler.getRandomObject);
+  server.post('/metadata', schemaValidatorMiddleware.validateSchema, metadataHandler.createObject);
 };
 
 export default buildRoutes;
