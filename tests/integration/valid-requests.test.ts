@@ -8,6 +8,7 @@ import Environment from '../../src/server/config/environment';
 import { connectToDatabase } from '../../src/server/db';
 import { configure, Handlers } from '../../src/server/handlers';
 import { Logger } from '../../src/server/logger/logger';
+import { buildMiddlewares, Middlewares } from '../../src/server/middlewares';
 import buildServer from '../../src/server/server';
 import { configure as configureServices, Services } from '../../src/server/services';
 
@@ -19,7 +20,8 @@ beforeAll(async () => {
   database = await connectToDatabase(environment, logger);
   services = configureServices(logger, database);
   const handlers: Handlers = configure(logger, services);
-  server = buildServer(handlers, environment, logger);
+  const middlewares: Middlewares = buildMiddlewares(logger);
+  server = buildServer(handlers, middlewares, environment, logger);
   connection = server.listen(environment.port);
 });
 
