@@ -9,16 +9,19 @@ export const mockedResponse = () => {
   return response;
 };
 
-export const mockedRequest = (body?: Record<string, unknown>) => {
-  return { body } as Request;
+export const mockedRequest = (
+  body?: Record<string, unknown>,
+  parameters?: Record<string, unknown>
+) => {
+  return { body, params: parameters } as Request;
 };
 
-export const mockRequest = (body) => ({
+export const mockRequest = (body: any = {}) => ({
   body,
 });
 
 export const mockResponse = {
-  status: jest.fn().mockReturnValue(true),
-  sendStatus: jest.fn().mockResolvedValue(true),
-  json: jest.fn().mockReturnValue(true),
+  send: jest.fn(),
+  json: jest.fn(),
+  status: jest.fn(() => mockResponse),
 };

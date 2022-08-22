@@ -20,6 +20,21 @@ afterEach(() => {
 });
 
 describe('Validate metadata object', () => {
+  test('should validate that metadata object contains required property "subject" when an empty body is provided', async () => {
+    await schemaValidator.validateSchema(mockRequest(), mockResponse, next);
+    expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
+      {
+        instancePath: '',
+        schemaPath: '#/required',
+        keyword: 'required',
+        params: {
+          missingProperty: 'subject',
+        },
+        message: "must have required property 'subject'",
+      },
+    ]);
+  });
+
   test('should validate that metadata object contains required property "subject" and any additional property must be an object', async () => {
     await schemaValidator.validateSchema(
       mockRequest({ no_subject: '', add_prop: '' }),
@@ -213,7 +228,7 @@ describe('Validate metadata object', () => {
     ]);
   });
 
-  test('should validate the well-formedness of an entry', async () => {
+  test('should validate the well-formedness of an entry property', async () => {
     const body = {
       subject: 'sub',
       contact: {

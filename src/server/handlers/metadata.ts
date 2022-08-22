@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { Metadata } from '../../types/metadata';
 import { ErrorFactory } from '../errors/error-factory';
 import { Logger } from '../logger/logger';
 import metadataMappers from '../mappers/metadata';
@@ -15,7 +16,7 @@ export interface MetadataHandler {
     request: Request,
     response: Response,
     next: NextFunction
-  ): Promise<Response | void>;
+  ): Promise<Response<Metadata> | void>;
 }
 
 const configure = (logger: Logger, services: Services): MetadataHandler => ({
@@ -50,22 +51,22 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     }
   },
 
-  getObjectBySubject: async (request, response, next) => {
-    const subject = 'test4';
+  getObjectBySubject: async (request, response, next): Promise<Response<Metadata> | void> => {
+    const subject = request.params['subject'];
     try {
       const object = await services.databaseService.getObject({ subject });
       if (!object) {
         logger.log.error(
           `[Handlers][getObjectBySubject] Metadata object with subject ${subject} does not exists`
         );
-        throw ErrorFactory.subjectExistsError(
+        throw ErrorFactory.subjectNotFoundError(
           'A metadata object with that subject does not exists'
         );
       }
       delete object._id;
       return response.status(200).send(metadataMappers.mapGetObjectBySubjectResponse(object));
     } catch (error) {
-      logger.log.error('[Handler][getObjectBySubject] Error creating metadata object');
+      logger.log.error('[Handler][getObjectBySubject] Error retrieving metadata object');
       return next(error);
     }
   },

@@ -8,7 +8,7 @@ paths:
   /health:
     get:
       summary: Server healthcheck
-      operationId: healthcheck
+      operationId: health-check
       responses:
         '200':
           description: Successful operation
@@ -33,6 +33,22 @@ paths:
           description: Metadata object created
         '500':
           description: Server unavailable
+  /metadata/{subject}:
+    get:
+      summary: Get the full metadata object associated with the provided subject
+      operationId: metadata-get-object-by-subject
+      parameters:
+        - in: path
+          name: subject
+          schema:
+            type: string
+          required: true
+          description: Subject of the metadata object to get
+      responses:
+        '200':
+          description: Metadata object retrieved
+        '404':
+          description: Metadata object not found
 components:
   schemas:
     Healthcheck:
