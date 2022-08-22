@@ -16,14 +16,24 @@ const metadata = { subject: 'some-subject' };
 const object2 = {
   _id: 'abc',
   subject: 'subject object #2',
-  entry: {
-    value: 'value object #2',
-    sequenceNumber: 2,
-    signatures: {
-      signature: '79a4601',
-      publicKey: 'bc77d04',
+  entry: [
+    {
+      value: 'value object #2',
+      sequenceNumber: 1,
+      signatures: {
+        signature: '79a4601',
+        publicKey: 'bc77d04',
+      },
     },
-  },
+    {
+      value: 'value object #2, version 2 ',
+      sequenceNumber: 2,
+      signatures: {
+        signature: '79a4601',
+        publicKey: 'bc77d04',
+      },
+    },
+  ],
 };
 
 beforeAll(() => {
@@ -110,14 +120,24 @@ describe('Metadata handlers', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(200);
     });
 
-    test('should retrieve the existing object', async () => {
+    test('should retrieve the existing object with the highest sequenceNumber', async () => {
       services.databaseService.getObject.mockResolvedValueOnce(object2);
       await metadataHandler.getObjectBySubject(
         mockedRequest(undefined, { subject: object2.subject }),
         mockResponse,
         next
       );
-      expect(mockResponse.send).toHaveBeenCalledWith(object2);
+      expect(mockResponse.send).toHaveBeenCalledWith({
+        subject: 'subject object #2',
+        entry: {
+          value: 'value object #2, version 2 ',
+          sequenceNumber: 2,
+          signatures: {
+            signature: '79a4601',
+            publicKey: 'bc77d04',
+          },
+        },
+      });
     });
 
     test('should call db.getObject() one time only', async () => {
