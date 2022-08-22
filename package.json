@@ -8,6 +8,7 @@
     "dev": "npm run build && npm run start",
     "start": "node dist/index.js",
     "test:unit": "jest tests/unit",
+    "test:unit:cover": "jest tests/unit --coverage",
     "test:integration": "jest tests/integration",
     "prepare": "husky install",
     "lint": "npm run eslint && npm run prettier:list-different",
