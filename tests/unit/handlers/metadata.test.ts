@@ -4,36 +4,21 @@ import { configure } from '../../../src/server/handlers';
 import { MetadataHandler } from '../../../src/server/handlers/metadata';
 import { Logger } from '../../../src/server/logger/logger';
 import { mockRequest, mockResponse } from '../mocks/express';
+import {
+  mappedObject,
+  objectFromDatabase,
+  objectFromResponse,
+  objectWithSubject,
+  unmappedObject,
+} from '../utils/data';
 
 let metadataHandler: MetadataHandler;
 const services = {
   databaseService: {
     getObject: jest.fn(),
     insertObject: jest.fn(),
+    ensureExists: jest.fn(),
   },
-};
-const metadata = { subject: 'some-subject' };
-const object2 = {
-  _id: 'abc',
-  subject: 'subject object #2',
-  entry: [
-    {
-      value: 'value object #2',
-      sequenceNumber: 1,
-      signatures: {
-        signature: '79a4601',
-        publicKey: 'bc77d04',
-      },
-    },
-    {
-      value: 'value object #2, version 2 ',
-      sequenceNumber: 2,
-      signatures: {
-        signature: '79a4601',
-        publicKey: 'bc77d04',
-      },
-    },
-  ],
 };
 
 beforeAll(() => {
@@ -53,8 +38,10 @@ afterEach(() => {
 describe('Metadata handlers', () => {
   describe('createObject', () => {
     test('Object already exists', async () => {
-      services.databaseService.getObject.mockResolvedValueOnce({ _id: 'abc' });
-      await metadataHandler.createObject(mockRequest(metadata), mockResponse, next);
+      services.databaseService.ensureExists.mockImplementation(() => {
+        throw ErrorFactory.subjectExistsError('A metadata object with that subject already exists');
+      });
+      await metadataHandler.createObject(mockRequest(unmappedObject), mockResponse, next);
       expect(next).toHaveBeenCalledWith(
         ErrorFactory.subjectExistsError('A metadata object with that subject already exists')
       );
@@ -62,43 +49,25 @@ describe('Metadata handlers', () => {
 
     describe('Object created succesfully', () => {
       test('Check db insert service number of calls', async () => {
-        services.databaseService.getObject.mockResolvedValueOnce(undefined);
-        await metadataHandler.createObject(mockRequest(metadata), mockResponse, next);
+        services.databaseService.ensureExists.mockImplementation(() => {
+          return;
+        });
+        await metadataHandler.createObject(mockRequest(unmappedObject), mockResponse, next);
         expect(services.databaseService.insertObject).toHaveBeenCalledTimes(1);
       });
 
       test('Check db insert service call', async () => {
-        services.databaseService.getObject.mockResolvedValueOnce(undefined);
-        await metadataHandler.createObject(mockRequest(metadata), mockResponse, next);
-        expect(services.databaseService.insertObject).toHaveBeenCalledWith(metadata);
+        await metadataHandler.createObject(mockRequest(objectWithSubject), mockResponse, next);
+        expect(services.databaseService.insertObject).toHaveBeenCalledWith(objectWithSubject);
       });
 
       test('Check values are mapped correctly', async () => {
-        services.databaseService.getObject.mockResolvedValueOnce(undefined);
-        const metadataWithEntry = {
-          subject: 'subject',
-          entry: {
-            value: true,
-            sequenceNumber: 2,
-            signatures: [],
-          },
-        };
-        await metadataHandler.createObject(mockRequest(metadataWithEntry), mockResponse, next);
-        expect(services.databaseService.insertObject).toHaveBeenCalledWith({
-          subject: 'subject',
-          entry: [
-            {
-              value: true,
-              sequenceNumber: 2,
-              signatures: [],
-            },
-          ],
-        });
+        await metadataHandler.createObject(mockRequest(unmappedObject), mockResponse, next);
+        expect(services.databaseService.insertObject).toHaveBeenCalledWith(mappedObject);
       });
 
       test('Check response status', async () => {
-        services.databaseService.getObject.mockResolvedValueOnce(undefined);
-        await metadataHandler.createObject(mockRequest(metadata), mockResponse, next);
+        await metadataHandler.createObject(mockRequest(unmappedObject), mockResponse, next);
         expect(mockResponse.sendStatus).toHaveBeenCalledWith(201);
       });
     });
@@ -106,9 +75,9 @@ describe('Metadata handlers', () => {
 
   describe('Method getObjectBySubject', () => {
     test('should return response status 200 when an existing object is retrieved', async () => {
-      services.databaseService.getObject.mockResolvedValueOnce(object2);
+      services.databaseService.ensureExists.mockResolvedValueOnce(objectFromDatabase);
       await metadataHandler.getObjectBySubject(
-        mockRequest(undefined, { subject: object2.subject }),
+        mockRequest(undefined, { subject: objectFromDatabase.subject }),
         mockResponse,
         next
       );
@@ -116,43 +85,36 @@ describe('Metadata handlers', () => {
     });
 
     test('should retrieve the existing object with the highest sequenceNumber', async () => {
-      services.databaseService.getObject.mockResolvedValueOnce(object2);
+      services.databaseService.ensureExists.mockResolvedValueOnce(objectFromDatabase);
       await metadataHandler.getObjectBySubject(
-        mockRequest(undefined, { subject: object2.subject }),
+        mockRequest(undefined, { subject: objectFromDatabase.subject }),
         mockResponse,
         next
       );
-      expect(mockResponse.send).toHaveBeenCalledWith({
-        subject: 'subject object #2',
-        entry: {
-          value: 'value object #2, version 2 ',
-          sequenceNumber: 2,
-          signatures: {
-            signature: '79a4601',
-            publicKey: 'bc77d04',
-          },
-        },
-      });
+      expect(mockResponse.send).toHaveBeenCalledWith(objectFromResponse);
     });
 
     test('should call db.getObject() one time only', async () => {
-      services.databaseService.getObject.mockResolvedValueOnce(object2);
+      services.databaseService.ensureExists.mockResolvedValueOnce(objectFromDatabase);
       await metadataHandler.getObjectBySubject(
-        mockRequest(undefined, { subject: object2.subject }),
+        mockRequest(undefined, { subject: objectFromDatabase.subject }),
         mockResponse,
         next
       );
-      expect(services.databaseService.getObject).toHaveBeenCalledTimes(1);
+      expect(services.databaseService.ensureExists).toHaveBeenCalledTimes(1);
     });
 
     test('should call db.getObject() with an object as parameter that contains required property subject', async () => {
-      services.databaseService.getObject.mockResolvedValueOnce(object2);
+      services.databaseService.ensureExists.mockResolvedValueOnce(objectFromDatabase);
       await metadataHandler.getObjectBySubject(
-        mockRequest(undefined, { subject: object2.subject }),
+        mockRequest(undefined, { subject: objectFromDatabase.subject }),
         mockResponse,
         next
       );
-      expect(services.databaseService.getObject).toHaveBeenCalledWith({ subject: object2.subject });
+      expect(services.databaseService.ensureExists).toHaveBeenCalledWith(
+        { subject: objectFromDatabase.subject },
+        true
+      );
     });
   });
 });

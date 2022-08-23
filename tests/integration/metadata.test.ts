@@ -10,6 +10,7 @@ import { Logger } from '../../src/server/logger/logger';
 import { buildMiddlewares, Middlewares } from '../../src/server/middlewares';
 import buildServer from '../../src/server/server';
 import { configure as configureServices, Services } from '../../src/server/services';
+import { invalidObject, validationErrors, validObjectWithOneEntry } from './utils/data';
 
 let connection: Server, database: Db, environment: Environment, server: Express, services: Services;
 
@@ -29,82 +30,21 @@ describe('POST /metadata', () => {
   test('should not allow to create an invalid metadata object', async () => {
     const response = await request(environment.connectionString)
       .post('/metadata')
-      .send({
-        subject: 'sub',
-        contact: {
-          value: 123,
-          sequenceNumber: 1,
-          signatures: {
-            signature: '79a4601',
-            publicKey: 'bc77d04',
-          },
-          extra_property: 'invalid',
-        },
-      });
-    expect(response.body).toStrictEqual([
-      {
-        instancePath: '/contact',
-        schemaPath: '#/additionalProperties',
-        keyword: 'additionalProperties',
-        params: {
-          additionalProperty: 'extra_property',
-        },
-        message: 'must NOT have additional properties',
-      },
-      {
-        instancePath: '/contact/signatures/publicKey',
-        schemaPath: '#/definitions/signatures/properties/publicKey/minLength',
-        keyword: 'minLength',
-        params: {
-          limit: 64,
-        },
-        message: 'must NOT have fewer than 64 characters',
-      },
-      {
-        instancePath: '/contact/signatures/signature',
-        schemaPath: '#/definitions/signatures/properties/signature/minLength',
-        keyword: 'minLength',
-        params: {
-          limit: 128,
-        },
-        message: 'must NOT have fewer than 128 characters',
-      },
-    ]);
+      .send(invalidObject);
+    expect(response.body).toStrictEqual(validationErrors);
   });
 
   test('should create a valid subject with an entry', async () => {
     const response = await request(environment.connectionString)
       .post('/metadata')
-      .send({
-        subject: 'sub',
-        entry1: {
-          value: 123,
-          sequenceNumber: 1,
-          signatures: {
-            signature:
-              '3132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333a',
-            publicKey: '123456789012345678901234567890123456789012345678901234567890123a',
-          },
-        },
-      });
+      .send(validObjectWithOneEntry);
     expect(response.text).toEqual('Created');
   });
 
   test('should not allow to create an object with duplicate subject', async () => {
     const response = await request(environment.connectionString)
       .post('/metadata')
-      .send({
-        subject: 'sub',
-        entry1: {
-          value: 123,
-          sequenceNumber: 1,
-          signatures: {
-            signature:
-              '3132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333a',
-            publicKey: '123456789012345678901234567890123456789012345678901234567890123a',
-          },
-        },
-      });
+      .send(validObjectWithOneEntry);
     expect(response.text).toStrictEqual(
       '{"internalCode":"subjectExistsError","message":"A metadata object with that subject already exists"}'
     );
@@ -114,18 +54,7 @@ describe('POST /metadata', () => {
 describe('GET /metadata/:subject', () => {
   test("should retrieve an existing metadata object with subject: 'test4'", async () => {
     const response = await request(environment.connectionString).get('/metadata/sub');
-    expect(response.body).toStrictEqual({
-      subject: 'sub',
-      entry1: {
-        value: 123,
-        sequenceNumber: 1,
-        signatures: {
-          signature:
-            '3132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333a',
-          publicKey: '123456789012345678901234567890123456789012345678901234567890123a',
-        },
-      },
-    });
+    expect(response.body).toStrictEqual(validObjectWithOneEntry);
   });
 
   test("should not retrieve an unexisting metadata object with unexisting subject: 'unexisting'", async () => {
