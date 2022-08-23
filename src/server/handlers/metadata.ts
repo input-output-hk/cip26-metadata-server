@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { Metadata } from '../../types/metadata';
-import { ErrorFactory } from '../errors/error-factory';
 import { Logger } from '../logger/logger';
 import metadataMappers from '../mappers/metadata';
 import { Services } from '../services';
@@ -29,21 +28,11 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
       const subject = request.body.subject;
       logger.log.info('[Handlers][createObject] Creating or modifying metadata object');
       logger.log.info(`[Handlers][createObject] Getting metadata object with subject ${subject}`);
-      const object = await services.databaseService.getObject({ subject });
-      if (object) {
-        logger.log.error(
-          `[Handlers][createObject] Metadata object with subject ${subject} already exists`
-        );
-        throw ErrorFactory.subjectExistsError('A metadata object with that subject already exists');
-      }
-      logger.log.info(
-        `[Handlers][createObject] Metadata object with subject ${subject} does not exist. Creating object`
-      );
+      await services.databaseService.ensureExists({ subject }, false);
       await services.databaseService.insertObject(
         metadataMappers.mapMetadataProperties(request.body)
       );
       logger.log.info('[Handlers][createObject] Metada object created');
-
       return response.sendStatus(201);
     } catch (error) {
       logger.log.error('[Handler][createObject] Error creating metadata object');
@@ -52,16 +41,11 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
   },
 
   getObjectBySubject: async (request, response, next): Promise<Response<Metadata> | void> => {
-    const subject = request.params['subject'];
+    const subject = request.params.subject;
     try {
-      const object = await services.databaseService.getObject({ subject });
+      const object = await services.databaseService.ensureExists({ subject }, true);
       if (!object) {
-        logger.log.error(
-          `[Handlers][getObjectBySubject] Metadata object with subject ${subject} does not exists`
-        );
-        throw ErrorFactory.subjectNotFoundError(
-          'A metadata object with that subject does not exists'
-        );
+        return;
       }
       delete object._id;
       return response.status(200).send(metadataMappers.mapGetObjectBySubjectResponse(object));

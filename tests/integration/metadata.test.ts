@@ -89,6 +89,26 @@ describe('POST /metadata', () => {
       });
     expect(response.text).toEqual('Created');
   });
+
+  test('should not allow to create an object with duplicate subject', async () => {
+    const response = await request(environment.connectionString)
+      .post('/metadata')
+      .send({
+        subject: 'sub',
+        entry1: {
+          value: 123,
+          sequenceNumber: 1,
+          signatures: {
+            signature:
+              '3132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333a',
+            publicKey: '123456789012345678901234567890123456789012345678901234567890123a',
+          },
+        },
+      });
+    expect(response.text).toStrictEqual(
+      '{"internalCode":"subjectExistsError","message":"A metadata object with that subject already exists"}'
+    );
+  });
 });
 
 describe('GET /metadata/:subject', () => {
@@ -106,6 +126,13 @@ describe('GET /metadata/:subject', () => {
         },
       },
     });
+  });
+
+  test("should not retrieve an unexisting metadata object with unexisting subject: 'unexisting'", async () => {
+    const response = await request(environment.connectionString).get('/metadata/unexisting');
+    expect(response.text).toStrictEqual(
+      '{"internalCode":"subjectNotFoundError","message":"A metadata object with that subject does not exists"}'
+    );
   });
 });
 
