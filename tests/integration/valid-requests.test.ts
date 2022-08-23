@@ -17,6 +17,7 @@ let connection: Server, database: Db, environment: Environment, server: Express,
 beforeAll(async () => {
   environment = new Environment();
   const logger = new Logger(environment.loggerLevel);
+  environment.dbUri = process.env.MONGO_URL;
   database = await connectToDatabase(environment, logger);
   services = configureServices(logger, database);
   const handlers: Handlers = configure(logger, services);
