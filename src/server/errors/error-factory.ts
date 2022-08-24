@@ -44,6 +44,10 @@ const errors = {
     internalCode: 'subjectExistsError',
     statusCode: 500,
   },
+  SUBJECT_NOT_FOUND_ERROR: {
+    internalCode: 'subjectNotFoundError',
+    statusCode: 404,
+  },
 };
 
 const buildApiError = (
@@ -65,9 +69,13 @@ const databaseError: BuildApiErrorFunction = (message) => buildApiError(errors.D
 const subjectExistsError: BuildApiErrorFunction = (message) =>
   buildApiError(errors.SUBJECT_EXISTS_ERROR, message);
 
+const subjectNotFoundError: BuildApiErrorFunction = (message) =>
+  buildApiError(errors.SUBJECT_NOT_FOUND_ERROR, message);
+
 export const ErrorFactory = {
   unmappedError,
   databaseConnectionError,
   databaseError,
   subjectExistsError,
+  subjectNotFoundError,
 };

@@ -6,12 +6,7 @@ import { Logger } from '../logger/logger';
 import { DB_CONNECTION_NEEDED_PARAMS } from '../utils/constants';
 
 export const connectToDatabase = (connectionData: CONNECTION_DATA, logger: Logger) => {
-  if (
-    !connectionData.dbCluster ||
-    !connectionData.dbName ||
-    !connectionData.dbPassword ||
-    !connectionData.dbUsername
-  ) {
+  if (!connectionData.dbName || !connectionData.dbUri) {
     throw ErrorFactory.databaseConnectionError(
       `Missing connection properties. All properties in ${DB_CONNECTION_NEEDED_PARAMS} should be set.`
     );
@@ -20,8 +15,7 @@ export const connectToDatabase = (connectionData: CONNECTION_DATA, logger: Logge
     logger.log.info(
       `[connectToDatabase] Initializing connection to ${connectionData.dbName} database`
     );
-    const uri = `mongodb+srv://${connectionData.dbUsername}:${connectionData.dbPassword}@${connectionData.dbCluster}?retryWrites=true&writeConcern=majority`;
-    const client = new MongoClient(uri);
+    const client = new MongoClient(connectionData.dbUri);
     return client.db(connectionData.dbName);
   } catch (error) {
     logger.log.error(

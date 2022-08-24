@@ -27,7 +27,7 @@ lint:
     - schedules
 
 test:
-  image: docker.atixlabs.com/node:16.16.0-alpine
+  image: docker.atixlabs.com/node:16
   variables:
     NODE_ENV: test
   stage: test

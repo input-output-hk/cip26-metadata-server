@@ -1,4 +1,4 @@
-import { Metadata } from '../../types/metadata';
+import { Entry, Metadata } from '../../types/metadata';
 import { WELL_KNOWN_PROPERTIES } from '../utils/constants';
 
 const mapMetadataProperties = (metadata: Metadata) => {
@@ -13,6 +13,22 @@ const mapMetadataProperties = (metadata: Metadata) => {
   return mappedMetadata;
 };
 
+const mapGetObjectBySubjectResponse = (metadataObject: Record<string, unknown>) => {
+  const mappedResponse = {};
+  for (const [key, value] of Object.entries(metadataObject)) {
+    if (WELL_KNOWN_PROPERTIES.includes(key)) {
+      mappedResponse[key] = value;
+    } else {
+      // eslint-disable-next-line unicorn/no-array-reduce
+      mappedResponse[key] = (value as Array<Entry>).reduce((higher, current) =>
+        higher?.sequenceNumber && higher.sequenceNumber > current.sequenceNumber ? higher : current
+      );
+    }
+  }
+  return mappedResponse;
+};
+
 export default {
   mapMetadataProperties,
+  mapGetObjectBySubjectResponse,
 };
