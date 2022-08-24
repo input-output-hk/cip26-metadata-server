@@ -6,3 +6,6 @@
 
 # Builded files
 /dist
+
+# Coverage
+/coverage
