@@ -65,26 +65,6 @@ describe('GET /metadata/:subject', () => {
   });
 });
 
-// describe('PUT /metadata/:subject', () => {
-//   test('should reject updates of a known entry with a lower sequence number', async () => {
-//     const response = await request(environment.connectionString)
-//       .put('/metadata/sub')
-//       .send({
-//         subject: 'sub',
-//         entry1: {
-//           value: 'new value for entry1 with lower sequence number than previous',
-//           sequenceNumber: 0,
-//           signatures: {
-//             signature:
-//               '3132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333a',
-//             publicKey: '123456789012345678901234567890123456789012345678901234567890123a',
-//           },
-//         },
-//       });
-//     expect(response.text).toEqual('Updated');
-//   });
-// });
-
 afterAll(() => {
   connection.close();
 });
