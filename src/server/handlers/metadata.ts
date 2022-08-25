@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { Metadata } from '../../types/metadata';
 import { Logger } from '../logger/logger';
 import metadataMappers from '../mappers/metadata';
+import { CustomRequest } from '../middlewares/metadata';
 import { Services } from '../services';
 
 export interface MetadataHandler {
@@ -16,6 +17,11 @@ export interface MetadataHandler {
     response: Response,
     next: NextFunction
   ): Promise<Response<Metadata> | void>;
+  getPropertyNames(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response<string[]> | void>;
 }
 
 const configure = (logger: Logger, services: Services): MetadataHandler => ({
@@ -25,10 +31,7 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     next: NextFunction
   ): Promise<{ statusCode: number } | void> => {
     try {
-      const subject = request.body.subject;
-      logger.log.info('[Handlers][createObject] Creating or modifying metadata object');
-      logger.log.info(`[Handlers][createObject] Getting metadata object with subject ${subject}`);
-      await services.databaseService.ensureExists({ subject }, false);
+      logger.log.info('[Handlers][createObject] Creating metadata object');
       await services.databaseService.insertObject(
         metadataMappers.mapMetadataProperties(request.body)
       );
@@ -40,17 +43,34 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     }
   },
 
-  getObjectBySubject: async (request, response, next): Promise<Response<Metadata> | void> => {
-    const subject = request.params.subject;
+  getObjectBySubject: async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response<Metadata> | void> => {
     try {
-      const object = await services.databaseService.ensureExists({ subject }, true);
-      if (!object) {
-        return;
-      }
+      const request_ = request as CustomRequest;
+      const object = request_.object;
       delete object._id;
       return response.status(200).send(metadataMappers.mapGetObjectBySubjectResponse(object));
     } catch (error) {
       logger.log.error('[Handler][getObjectBySubject] Error retrieving metadata object');
+      return next(error);
+    }
+  },
+
+  getPropertyNames: async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response<string[]> | void> => {
+    try {
+      const request_ = request as CustomRequest;
+      const object = request_.object;
+      delete object._id;
+      return response.status(200).send(Object.keys(object));
+    } catch (error) {
+      logger.log.error('[Handler][getPropertyNames] Error retrieving property names');
       return next(error);
     }
   },

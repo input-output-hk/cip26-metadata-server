@@ -6,7 +6,13 @@ import { mockRequest, mockResponse } from './mocks/express';
 let schemaValidator;
 beforeAll(async () => {
   const logger = new Logger('info');
-  const middlewares: Middlewares = buildMiddlewares(logger);
+  const services = {
+    databaseService: {
+      getObject: jest.fn(),
+      insertObject: jest.fn(),
+    },
+  };
+  const middlewares: Middlewares = buildMiddlewares(logger, services);
   schemaValidator = middlewares.schemaValidatorMiddleware;
 });
 

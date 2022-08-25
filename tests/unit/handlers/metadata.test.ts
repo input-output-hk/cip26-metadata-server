@@ -1,9 +1,8 @@
 /* eslint-disable unicorn/no-useless-undefined */
-import { ErrorFactory } from '../../../src/server/errors/error-factory';
 import { configure } from '../../../src/server/handlers';
 import { MetadataHandler } from '../../../src/server/handlers/metadata';
 import { Logger } from '../../../src/server/logger/logger';
-import { mockRequest, mockResponse } from '../mocks/express';
+import { mockCustomRequest, mockRequest, mockResponse } from '../mocks/express';
 import {
   mappedObject,
   objectFromDatabase,
@@ -36,48 +35,32 @@ afterEach(() => {
 });
 
 describe('Metadata handlers', () => {
-  describe('createObject', () => {
-    test('Object already exists', async () => {
-      services.databaseService.ensureExists.mockImplementation(() => {
-        throw ErrorFactory.subjectExistsError('A metadata object with that subject already exists');
-      });
+  describe('Method createObject', () => {
+    test('Check db insert service number of calls', async () => {
       await metadataHandler.createObject(mockRequest(unmappedObject), mockResponse, next);
-      expect(next).toHaveBeenCalledWith(
-        ErrorFactory.subjectExistsError('A metadata object with that subject already exists')
-      );
+      expect(services.databaseService.insertObject).toHaveBeenCalledTimes(1);
     });
 
-    describe('Object created succesfully', () => {
-      test('Check db insert service number of calls', async () => {
-        services.databaseService.ensureExists.mockImplementation(() => {
-          return;
-        });
-        await metadataHandler.createObject(mockRequest(unmappedObject), mockResponse, next);
-        expect(services.databaseService.insertObject).toHaveBeenCalledTimes(1);
-      });
+    test('Check db insert service call', async () => {
+      await metadataHandler.createObject(mockRequest(objectWithSubject), mockResponse, next);
+      expect(services.databaseService.insertObject).toHaveBeenCalledWith(objectWithSubject);
+    });
 
-      test('Check db insert service call', async () => {
-        await metadataHandler.createObject(mockRequest(objectWithSubject), mockResponse, next);
-        expect(services.databaseService.insertObject).toHaveBeenCalledWith(objectWithSubject);
-      });
+    test('Check values are mapped correctly', async () => {
+      await metadataHandler.createObject(mockRequest(unmappedObject), mockResponse, next);
+      expect(services.databaseService.insertObject).toHaveBeenCalledWith(mappedObject);
+    });
 
-      test('Check values are mapped correctly', async () => {
-        await metadataHandler.createObject(mockRequest(unmappedObject), mockResponse, next);
-        expect(services.databaseService.insertObject).toHaveBeenCalledWith(mappedObject);
-      });
-
-      test('Check response status', async () => {
-        await metadataHandler.createObject(mockRequest(unmappedObject), mockResponse, next);
-        expect(mockResponse.sendStatus).toHaveBeenCalledWith(201);
-      });
+    test('Check response status', async () => {
+      await metadataHandler.createObject(mockRequest(unmappedObject), mockResponse, next);
+      expect(mockResponse.sendStatus).toHaveBeenCalledWith(201);
     });
   });
 
   describe('Method getObjectBySubject', () => {
     test('should return response status 200 when an existing object is retrieved', async () => {
-      services.databaseService.ensureExists.mockResolvedValueOnce(objectFromDatabase);
       await metadataHandler.getObjectBySubject(
-        mockRequest(undefined, { subject: objectFromDatabase.subject }),
+        mockCustomRequest(objectFromDatabase, { subject: objectFromDatabase.subject }),
         mockResponse,
         next
       );
@@ -85,36 +68,50 @@ describe('Metadata handlers', () => {
     });
 
     test('should retrieve the existing object with the highest sequenceNumber', async () => {
-      services.databaseService.ensureExists.mockResolvedValueOnce(objectFromDatabase);
       await metadataHandler.getObjectBySubject(
-        mockRequest(undefined, { subject: objectFromDatabase.subject }),
+        mockCustomRequest(objectFromDatabase, { subject: objectFromDatabase.subject }),
         mockResponse,
         next
       );
       expect(mockResponse.send).toHaveBeenCalledWith(objectFromResponse);
     });
 
-    test('should call db.getObject() one time only', async () => {
-      services.databaseService.ensureExists.mockResolvedValueOnce(objectFromDatabase);
+    test('should throw an error if an invalid request.object is provided', async () => {
       await metadataHandler.getObjectBySubject(
-        mockRequest(undefined, { subject: objectFromDatabase.subject }),
+        mockCustomRequest({ entry: 'must be an array' }, { subject: objectFromDatabase.subject }),
         mockResponse,
         next
       );
-      expect(services.databaseService.ensureExists).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith(new TypeError('value.reduce is not a function'));
+    });
+  });
+
+  describe('Method getPropertyNames', () => {
+    test('should return response status 200 when properties of an existing object are retrieved', async () => {
+      await metadataHandler.getPropertyNames(
+        mockCustomRequest(objectFromDatabase, { subject: objectFromDatabase.subject }),
+        mockResponse,
+        next
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
     });
 
-    test('should call db.getObject() with an object as parameter that contains required property subject', async () => {
-      services.databaseService.ensureExists.mockResolvedValueOnce(objectFromDatabase);
-      await metadataHandler.getObjectBySubject(
-        mockRequest(undefined, { subject: objectFromDatabase.subject }),
+    test('should retrieve the property names of existing object', async () => {
+      await metadataHandler.getPropertyNames(
+        mockCustomRequest(objectFromDatabase, { subject: objectFromDatabase.subject }),
         mockResponse,
         next
       );
-      expect(services.databaseService.ensureExists).toHaveBeenCalledWith(
-        { subject: objectFromDatabase.subject },
-        true
+      expect(mockResponse.send).toHaveBeenCalledWith(['subject', 'entry']);
+    });
+
+    test('should return an empty array if an empty request.object is provided', async () => {
+      await metadataHandler.getPropertyNames(
+        mockCustomRequest(undefined, { subject: objectFromDatabase.subject }),
+        mockResponse,
+        next
       );
+      expect(mockResponse.send).toHaveBeenCalledWith([]);
     });
   });
 });

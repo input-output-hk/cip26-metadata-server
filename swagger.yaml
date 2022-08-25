@@ -50,7 +50,27 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MetadataObjectBySubjectBody'
+                $ref: '#/components/schemas/MetadataObjectBySubject'
+        '404':
+          description: Metadata object not found
+  /metadata/{subject}/properties:
+    get:
+      summary: Get all the property names which are available for the metadata object associated with the provided subject
+      operationId: metadata-get-property-names
+      parameters:
+        - in: path
+          name: subject
+          schema:
+            type: string
+          required: true
+          description: Subject of the metadata object to get properties from
+      responses:
+        '200':
+          description: Metadata object properties retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetadataObjectPropertyNames'
         '404':
           description: Metadata object not found
 components:
@@ -61,7 +81,7 @@ components:
         up:
           type: boolean
           example: true
-    MetadataObjectBySubjectBody:
+    MetadataObjectBySubject:
       type: object
       required: ['subject']
       additionalProperties:
@@ -131,6 +151,10 @@ components:
           type: string
           format: base64
           maxLength: 87400
+    MetadataObjectPropertyNames:
+      type: array
+      items:
+        type: string
     MetadataCreationBody:
       type: object
       required: ['subject']
