@@ -49,8 +49,7 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     next: NextFunction
   ): Promise<Response<Metadata> | void> => {
     try {
-      const request_ = request as CustomRequest;
-      const object = request_.object;
+      const { object } = request as CustomRequest;
       delete object._id;
       return response.status(200).send(metadataMappers.mapGetObjectBySubjectResponse(object));
     } catch (error) {
@@ -65,8 +64,7 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     next: NextFunction
   ): Promise<Response<string[]> | void> => {
     try {
-      const request_ = request as CustomRequest;
-      const object = request_.object;
+      const { object } = request as CustomRequest;
       delete object._id;
       return response.status(200).send(Object.keys(object));
     } catch (error) {

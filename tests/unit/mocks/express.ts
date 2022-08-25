@@ -13,9 +13,7 @@ export const mockCustomRequest = (
   object: Record<string, unknown> = {},
   parameters: Record<string, unknown> = {}
 ) => {
-  const request = { params: parameters } as CustomRequest;
-  request.object = object;
-  return request;
+  return { params: parameters, object } as CustomRequest;
 };
 
 export const mockResponse = {

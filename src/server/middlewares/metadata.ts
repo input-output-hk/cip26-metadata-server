@@ -34,7 +34,7 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
         `[Middlewares][checkSubjectExists] Metadata object with subject '${subject}' does exist. Retrieving object`
       );
       const request_ = request as CustomRequest;
-      request_.object = object as Document;
+      request_.object = object;
       return next();
     },
 

@@ -26,9 +26,10 @@ describe('POST /metadata', () => {
     const response = await request(connectionString)
       .post('/metadata')
       .send(validObjectWithOneEntry);
-    expect(response.text).toStrictEqual(
-      '{"internalCode":"subjectExistsError","message":"A metadata object with that subject already exists"}'
-    );
+    expect(response.body).toStrictEqual({
+      internalCode: 'subjectExistsError',
+      message: 'A metadata object with that subject already exists',
+    });
   });
 
   test('should create a valid metadata object with many properties', async () => {
@@ -47,9 +48,10 @@ describe('GET /metadata/:subject', () => {
 
   test("should not retrieve an unexisting metadata object with unexisting subject: 'unexisting'", async () => {
     const response = await request(connectionString).get('/metadata/unexisting');
-    expect(response.text).toStrictEqual(
-      '{"internalCode":"subjectNotFoundError","message":"A metadata object with that subject does not exists"}'
-    );
+    expect(response.body).toStrictEqual({
+      internalCode: 'subjectNotFoundError',
+      message: 'A metadata object with that subject does not exists',
+    });
   });
 });
 
@@ -78,8 +80,9 @@ describe('GET /metadata/:subject/properties', () => {
 
   test("should not retrieve properties of an unexisting metadata object with subject: 'unexisting'", async () => {
     const response = await request(connectionString).get('/metadata/unexisting/properties');
-    expect(response.text).toStrictEqual(
-      '{"internalCode":"subjectNotFoundError","message":"A metadata object with that subject does not exists"}'
-    );
+    expect(response.body).toStrictEqual({
+      internalCode: 'subjectNotFoundError',
+      message: 'A metadata object with that subject does not exists',
+    });
   });
 });
