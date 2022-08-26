@@ -22,7 +22,7 @@ const start = async () => {
     database = await connectToDatabase(environment, logger);
     services = configureServices(logger, database);
     handlers = configureHandlers(logger, services);
-    middlewares = buildMiddlewares(logger);
+    middlewares = buildMiddlewares(logger, services);
     server = buildServer(handlers, middlewares, environment, logger);
     server.listen(environment.port, () => {
       logger.log.info(

@@ -5,12 +5,25 @@ import { Middlewares } from '../middlewares';
 
 const buildRoutes = (
   { statusHandler, metadataHandler }: Handlers,
-  { schemaValidatorMiddleware }: Middlewares,
+  { schemaValidatorMiddleware, metadataMiddleware }: Middlewares,
   server: Express
 ) => {
   server.get('/health', statusHandler.getStatus);
-  server.post('/metadata', schemaValidatorMiddleware.validateSchema, metadataHandler.createObject);
-  server.get('/metadata/:subject', metadataHandler.getObjectBySubject);
+  server.post(
+    '/metadata',
+    [schemaValidatorMiddleware.validateSchema, metadataMiddleware.checkSubjectNotExists],
+    metadataHandler.createObject
+  );
+  server.get(
+    '/metadata/:subject',
+    metadataMiddleware.checkSubjectExists,
+    metadataHandler.getObjectBySubject
+  );
+  server.get(
+    '/metadata/:subject/properties',
+    metadataMiddleware.checkSubjectExists,
+    metadataHandler.getPropertyNames
+  );
 };
 
 export default buildRoutes;

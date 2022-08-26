@@ -3,8 +3,8 @@ import type { Config } from '@jest/types';
 const config: Config.InitialOptions = {
     verbose: true,
     preset: 'ts-jest',
-    globalSetup: './node_modules/@shelf/jest-mongodb/lib/setup.js',
-    globalTeardown: './node_modules/@shelf/jest-mongodb/lib/teardown.js'
+    globalSetup: './tests/integration/setup.ts',
+    globalTeardown: './tests/integration/teardown.ts'
 }
 
 export default config;
