@@ -266,12 +266,12 @@ describe('Validate metadata object', () => {
       },
       {
         instancePath: '/contact/signatures',
-        schemaPath: '#/definitions/signatures/type',
-        keyword: 'type',
+        schemaPath: '#/minItems',
+        keyword: 'minItems',
         params: {
-          type: 'object',
+          limit: 1,
         },
-        message: 'must be object',
+        message: 'must NOT have fewer than 1 items',
       },
     ]);
   });
@@ -280,7 +280,7 @@ describe('Validate metadata object', () => {
     await schemaValidator.validateSchema(
       mockRequest({
         subject: 'sub',
-        contact: { value: '123', sequenceNumber: -1, signatures: {} },
+        contact: { value: '123', sequenceNumber: -1, signatures: [{}] },
       }),
       mockResponse,
       next
@@ -297,8 +297,8 @@ describe('Validate metadata object', () => {
         message: 'must be >= 0',
       },
       {
-        instancePath: '/contact/signatures',
-        schemaPath: '#/definitions/signatures/required',
+        instancePath: '/contact/signatures/0',
+        schemaPath: '#/definitions/signature/required',
         keyword: 'required',
         params: {
           missingProperty: 'publicKey',
@@ -306,8 +306,8 @@ describe('Validate metadata object', () => {
         message: "must have required property 'publicKey'",
       },
       {
-        instancePath: '/contact/signatures',
-        schemaPath: '#/definitions/signatures/required',
+        instancePath: '/contact/signatures/0',
+        schemaPath: '#/definitions/signature/required',
         keyword: 'required',
         params: {
           missingProperty: 'signature',
@@ -323,14 +323,14 @@ describe('Validate metadata object', () => {
       entry_property: {
         value: {},
         sequenceNumber: 0,
-        signatures: { signature: '79a4601', publicKey: 'bc77d04' },
+        signatures: [{ signature: '79a4601', publicKey: 'bc77d04' }],
       },
     };
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
-        instancePath: '/entry_property/signatures/publicKey',
-        schemaPath: '#/definitions/signatures/properties/publicKey/minLength',
+        instancePath: '/entry_property/signatures/0/publicKey',
+        schemaPath: '#/definitions/signature/properties/publicKey/minLength',
         keyword: 'minLength',
         params: {
           limit: 64,
@@ -338,8 +338,8 @@ describe('Validate metadata object', () => {
         message: 'must NOT have fewer than 64 characters',
       },
       {
-        instancePath: '/entry_property/signatures/signature',
-        schemaPath: '#/definitions/signatures/properties/signature/minLength',
+        instancePath: '/entry_property/signatures/0/signature',
+        schemaPath: '#/definitions/signature/properties/signature/minLength',
         keyword: 'minLength',
         params: {
           limit: 128,
@@ -356,18 +356,20 @@ describe('Validate metadata object', () => {
       entry_property: {
         value: [],
         sequenceNumber: 10,
-        signatures: {
-          signature:
-            '31323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333435363738393031323334a',
-          publicKey: '3132333435363738393031323334353637383930313233343536373839303132a',
-        },
+        signatures: [
+          {
+            signature:
+              '31323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333435363738393031323334a',
+            publicKey: '3132333435363738393031323334353637383930313233343536373839303132a',
+          },
+        ],
       },
     };
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
     expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
       {
-        instancePath: '/entry_property/signatures/publicKey',
-        schemaPath: '#/definitions/signatures/properties/publicKey/maxLength',
+        instancePath: '/entry_property/signatures/0/publicKey',
+        schemaPath: '#/definitions/signature/properties/publicKey/maxLength',
         keyword: 'maxLength',
         params: {
           limit: 64,
@@ -375,8 +377,8 @@ describe('Validate metadata object', () => {
         message: 'must NOT have more than 64 characters',
       },
       {
-        instancePath: '/entry_property/signatures/signature',
-        schemaPath: '#/definitions/signatures/properties/signature/maxLength',
+        instancePath: '/entry_property/signatures/0/signature',
+        schemaPath: '#/definitions/signature/properties/signature/maxLength',
         keyword: 'maxLength',
         params: {
           limit: 128,
@@ -401,11 +403,13 @@ describe('Validate metadata object', () => {
       entry_property: {
         value: [],
         sequenceNumber: 10,
-        signatures: {
-          signature:
-            '3132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333x',
-          publicKey: '123456789012345678901234567890123456789012345678901234567890123x',
-        },
+        signatures: [
+          {
+            signature:
+              '3132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333x',
+            publicKey: '123456789012345678901234567890123456789012345678901234567890123x',
+          },
+        ],
       },
     };
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
@@ -413,14 +417,14 @@ describe('Validate metadata object', () => {
       {
         keyword: 'contentEncoding',
         message: 'invalid base16-encoded data',
-        instancePath: '/entry_property/signatures/publicKey',
-        schemaPath: '#/definitions/signatures/properties/publicKey/contentEncoding',
+        instancePath: '/entry_property/signatures/0/publicKey',
+        schemaPath: '#/definitions/signature/properties/publicKey/contentEncoding',
       },
       {
         keyword: 'contentEncoding',
         message: 'invalid base16-encoded data',
-        instancePath: '/entry_property/signatures/signature',
-        schemaPath: '#/definitions/signatures/properties/signature/contentEncoding',
+        instancePath: '/entry_property/signatures/0/signature',
+        schemaPath: '#/definitions/signature/properties/signature/contentEncoding',
       },
     ]);
   });
@@ -782,29 +786,35 @@ describe('Validate complex metadata objects', () => {
       contact: {
         value: 1,
         sequenceNumber: 1,
-        signatures: {
-          signature:
-            '12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678',
-          publicKey: '1234567890123456789012345678901234567890123456789012345678901234',
-        },
+        signatures: [
+          {
+            signature:
+              '12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678',
+            publicKey: '1234567890123456789012345678901234567890123456789012345678901234',
+          },
+        ],
       },
       'cbu-jpmorgan': {
         value: 'JPMorgan Chase & Co.',
         sequenceNumber: -1,
-        signatures: {
-          signature:
-            '12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678',
-          publicKey: '1234567890123456789012345678901234567890123456789012345678901234',
-        },
+        signatures: [
+          {
+            signature:
+              '12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678',
+            publicKey: '1234567890123456789012345678901234567890123456789012345678901234',
+          },
+        ],
       },
       'cbu-america': {
         value: 'Bank of America Corp.',
         sequenceNumber: 1,
-        signatures: {
-          signature:
-            'x2345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678',
-          publicKey: 'x234567890123456789012345678901234567890123456789012345678901234',
-        },
+        signatures: [
+          {
+            signature:
+              'x2345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678',
+            publicKey: 'x234567890123456789012345678901234567890123456789012345678901234',
+          },
+        ],
       },
     };
     await schemaValidator.validateSchema(mockRequest(body), mockResponse, next);
@@ -822,14 +832,14 @@ describe('Validate complex metadata objects', () => {
       {
         keyword: 'contentEncoding',
         message: 'invalid base16-encoded data',
-        instancePath: '/cbu-america/signatures/publicKey',
-        schemaPath: '#/definitions/signatures/properties/publicKey/contentEncoding',
+        instancePath: '/cbu-america/signatures/0/publicKey',
+        schemaPath: '#/definitions/signature/properties/publicKey/contentEncoding',
       },
       {
         keyword: 'contentEncoding',
         message: 'invalid base16-encoded data',
-        instancePath: '/cbu-america/signatures/signature',
-        schemaPath: '#/definitions/signatures/properties/signature/contentEncoding',
+        instancePath: '/cbu-america/signatures/0/signature',
+        schemaPath: '#/definitions/signature/properties/signature/contentEncoding',
       },
     ]);
   });
