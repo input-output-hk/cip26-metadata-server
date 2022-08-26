@@ -49,9 +49,11 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     next: NextFunction
   ): Promise<Response<Metadata> | void> => {
     try {
-      const { object } = request as CustomRequest;
-      delete object._id;
-      return response.status(200).send(metadataMappers.mapGetObjectBySubjectResponse(object));
+      const { metadataObject } = request as CustomRequest;
+      delete metadataObject._id;
+      return response
+        .status(200)
+        .send(metadataMappers.mapGetObjectBySubjectResponse(metadataObject));
     } catch (error) {
       logger.log.error('[Handler][getObjectBySubject] Error retrieving metadata object');
       return next(error);
@@ -64,9 +66,9 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     next: NextFunction
   ): Promise<Response<string[]> | void> => {
     try {
-      const { object } = request as CustomRequest;
-      delete object._id;
-      return response.status(200).send(Object.keys(object));
+      const { metadataObject } = request as CustomRequest;
+      delete metadataObject._id;
+      return response.status(200).send(Object.keys(metadataObject));
     } catch (error) {
       logger.log.error('[Handler][getPropertyNames] Error retrieving property names');
       return next(error);

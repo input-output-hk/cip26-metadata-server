@@ -11,7 +11,7 @@ export interface MetadataMiddleware {
 }
 
 export interface CustomRequest extends Request {
-  object: Document;
+  metadataObject: Document;
 }
 
 const configure = (logger: Logger, services: Services): MetadataMiddleware => {
@@ -21,8 +21,8 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
       logger.log.info(
         `[Middlewares][checkSubjectExists] Checking that metadata object with subject '${subject}' exists`
       );
-      const object = await services.databaseService.getObject({ subject });
-      if (!object) {
+      const metadataObject = await services.databaseService.getObject({ subject });
+      if (!metadataObject) {
         logger.log.error(
           `[Middlewares][checkSubjectExists] Metadata object with subject '${subject}' does not exists`
         );
@@ -34,7 +34,7 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
         `[Middlewares][checkSubjectExists] Metadata object with subject '${subject}' does exist. Retrieving object`
       );
       const request_ = request as CustomRequest;
-      request_.object = object;
+      request_.metadataObject = metadataObject;
       return next();
     },
 
