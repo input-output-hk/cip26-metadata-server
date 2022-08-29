@@ -32,6 +32,11 @@ test:
     NODE_ENV: test
   stage: test
   script:
+    - apt-get -y update
+    - apt-get -y install software-properties-common
+    - add-apt-repository -y ppa:deadsnakes/ppa
+    - apt-get -y update
+    - apt-get -y install python3.8  python-pip3
     - npm ci
     - npm run test:unit
     - npm run test:integration
