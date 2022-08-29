@@ -33,7 +33,7 @@ const validateSignaturesForEntry = (subject: string, entry: Entry, entryName: st
       const encodedMessage = encodeMessage(subject, entry, entryName);
       if (
         nacl.sign.detached.verify(
-          Buffer.from(encodedMessage),
+          Buffer.from(encodedMessage, 'hex'),
           Buffer.from(element.signature, 'hex'),
           Buffer.from(element.publicKey, 'hex')
         )
