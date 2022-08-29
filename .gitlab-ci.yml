@@ -33,7 +33,6 @@ test:
     NODE_ENV: test
   stage: test
   script:
-    - apk add g++ make py3-pip
     - npm ci
     - npm run test:unit
     - npm run test:integration
