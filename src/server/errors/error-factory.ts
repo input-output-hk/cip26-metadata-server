@@ -48,6 +48,10 @@ const errors = {
     internalCode: 'subjectNotFoundError',
     statusCode: 404,
   },
+  PROPERTY_NOT_FOUND_ERROR: {
+    internalCode: 'propertyNotFoundError',
+    statusCode: 404,
+  },
 };
 
 const buildApiError = (
@@ -72,10 +76,14 @@ const subjectExistsError: BuildApiErrorFunction = (message) =>
 const subjectNotFoundError: BuildApiErrorFunction = (message) =>
   buildApiError(errors.SUBJECT_NOT_FOUND_ERROR, message);
 
+const propertyNotFoundError: BuildApiErrorFunction = (message) =>
+  buildApiError(errors.PROPERTY_NOT_FOUND_ERROR, message);
+
 export const ErrorFactory = {
   unmappedError,
   databaseConnectionError,
   databaseError,
   subjectExistsError,
   subjectNotFoundError,
+  propertyNotFoundError,
 };

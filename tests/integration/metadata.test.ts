@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import request from 'supertest';
 
 import {
@@ -83,6 +84,126 @@ describe('GET /metadata/:subject/properties', () => {
     expect(response.body).toStrictEqual({
       internalCode: 'subjectNotFoundError',
       message: 'A metadata object with that subject does not exists',
+    });
+  });
+});
+
+describe('GET /metadata/:subject/property/:propertyName', () => {
+  test("should return the property value of the given property name: 'entry1' for an object with subject: 'sub'", async () => {
+    const response = await request(connectionString).get('/metadata/sub/property/entry1');
+    expect(response.body).toStrictEqual({
+      entry1: {
+        value: 123,
+        sequenceNumber: 1,
+        signatures: [
+          {
+            signature:
+              '3132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333a',
+            publicKey: '123456789012345678901234567890123456789012345678901234567890123a',
+          },
+        ],
+      },
+    });
+  });
+
+  test("should return the property value of the given property name: 'subject' for an object with subject: 'valid1'", async () => {
+    const response = await request(connectionString).get('/metadata/valid1/property/subject');
+    expect(response.body).toStrictEqual({ subject: 'valid1' });
+  });
+
+  test("should return the property value of the given property name: 'policy' for an object with subject: 'valid1'", async () => {
+    const response = await request(connectionString).get('/metadata/valid1/property/policy');
+    expect(response.body).toStrictEqual({
+      policy: 'FFFFFF00000000001111111111222222222233333333334444444444',
+    });
+  });
+
+  test("should return the property value of the given property name: 'preimage' for an object with subject: 'valid1'", async () => {
+    const response = await request(connectionString).get('/metadata/valid1/property/preimage');
+    expect(response.body).toStrictEqual({ preimage: { alg: 'sha1', msg: 'AADDBBCC' } });
+  });
+
+  test("should return the property value of the given property name: 'name' for an object with subject: 'valid1'", async () => {
+    const response = await request(connectionString).get('/metadata/valid1/property/name');
+    expect(response.body).toStrictEqual({ name: 'This is the name' });
+  });
+
+  test("should return the property value of the given property name: 'description' for an object with subject: 'valid1'", async () => {
+    const response = await request(connectionString).get('/metadata/valid1/property/description');
+    expect(response.body).toStrictEqual({ description: 'This is the description' });
+  });
+
+  test("should return the property value of the given property name: 'ticker' for an object with subject: 'valid1'", async () => {
+    const response = await request(connectionString).get('/metadata/valid1/property/ticker');
+    expect(response.body).toStrictEqual({ ticker: 'ADA/USDT' });
+  });
+
+  test("should return the property value of the given property name: 'decimals' for an object with subject: 'valid1'", async () => {
+    const response = await request(connectionString).get('/metadata/valid1/property/decimals');
+    expect(response.body).toStrictEqual({ decimals: 18 });
+  });
+
+  test("should return the property value of the given property name: 'url' for an object with subject: 'valid1'", async () => {
+    const response = await request(connectionString).get('/metadata/valid1/property/url');
+    expect(response.body).toStrictEqual({ url: 'https://cip26metadata.apps.atixlabs.xyz/health' });
+  });
+
+  test("should return the property value of the given property name: 'logo' for an object with subject: 'valid1'", async () => {
+    const response = await request(connectionString).get('/metadata/valid1/property/logo');
+    expect(response.body).toStrictEqual({ logo: 'aGVsbG8K' });
+  });
+
+  test("should return the property value of the given property name: 'entry_property1' for an object with subject: 'valid1'", async () => {
+    const response = await request(connectionString).get(
+      '/metadata/valid1/property/entry_property1'
+    );
+    expect(response.body).toStrictEqual({
+      entry_property1: {
+        value: 'vavue 1',
+        sequenceNumber: 1,
+        signatures: [
+          {
+            signature:
+              '3132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333F',
+            publicKey: '123456789012345678901234567890123456789012345678901234567890123F',
+          },
+        ],
+      },
+    });
+  });
+
+  test("should return the property value of the given property name: 'entry_property2' for an object with subject: 'valid1'", async () => {
+    const response = await request(connectionString).get(
+      '/metadata/valid1/property/entry_property2'
+    );
+    expect(response.body).toStrictEqual({
+      entry_property2: {
+        value: 'value 2',
+        sequenceNumber: 1,
+        signatures: [
+          {
+            signature:
+              '3132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333F',
+            publicKey: '123456789012345678901234567890123456789012345678901234567890123F',
+          },
+        ],
+      },
+    });
+  });
+
+  test("should return the property value of the given property name: 'subject' for an unexisting metadata object with subject: 'unexisting'", async () => {
+    const response = await request(connectionString).get('/metadata/unexisting/property/subject');
+    expect(response.body).toStrictEqual({
+      internalCode: 'subjectNotFoundError',
+      message: 'A metadata object with that subject does not exists',
+    });
+  });
+
+  test("should not retrieve unexisting property 'unexisting' of an existing metadata object with subject: 'valid1'", async () => {
+    const response = await request(connectionString).get('/metadata/valid1/property/unexisting');
+    expect(response.body).toStrictEqual({
+      internalCode: 'propertyNotFoundError',
+      message: "Property 'unexisting' does not exists",
     });
   });
 });

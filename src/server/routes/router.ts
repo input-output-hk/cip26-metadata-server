@@ -24,6 +24,11 @@ const buildRoutes = (
     metadataMiddleware.checkSubjectExists,
     metadataHandler.getPropertyNames
   );
+  server.get(
+    '/metadata/:subject/property/:propertyName',
+    metadataMiddleware.checkSubjectExists,
+    metadataHandler.getProperty
+  );
 };
 
 export default buildRoutes;

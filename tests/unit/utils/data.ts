@@ -29,18 +29,22 @@ export const objectFromDatabase = {
     {
       value: 'value object #2',
       sequenceNumber: 1,
-      signatures: {
-        signature: '79a4601',
-        publicKey: 'bc77d04',
-      },
+      signatures: [
+        {
+          signature: '79a4601',
+          publicKey: 'bc77d04',
+        },
+      ],
     },
     {
       value: 'value object #2, version 2 ',
       sequenceNumber: 2,
-      signatures: {
-        signature: '79a4601',
-        publicKey: 'bc77d04',
-      },
+      signatures: [
+        {
+          signature: '79a4601',
+          publicKey: 'bc77d04',
+        },
+      ],
     },
   ],
 };
@@ -50,9 +54,11 @@ export const objectFromResponse = {
   entry: {
     value: 'value object #2, version 2 ',
     sequenceNumber: 2,
-    signatures: {
-      signature: '79a4601',
-      publicKey: 'bc77d04',
-    },
+    signatures: [
+      {
+        signature: '79a4601',
+        publicKey: 'bc77d04',
+      },
+    ],
   },
 };
