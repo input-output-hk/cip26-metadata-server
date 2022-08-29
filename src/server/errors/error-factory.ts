@@ -48,6 +48,10 @@ const errors = {
     internalCode: 'subjectNotFoundError',
     statusCode: 404,
   },
+  INVALID_SIGNATURES: {
+    internalCode: 'invalidSignatures',
+    statusCode: 400,
+  },
 };
 
 const buildApiError = (
@@ -72,10 +76,14 @@ const subjectExistsError: BuildApiErrorFunction = (message) =>
 const subjectNotFoundError: BuildApiErrorFunction = (message) =>
   buildApiError(errors.SUBJECT_NOT_FOUND_ERROR, message);
 
+const invalidSignatures: BuildApiErrorFunction = (message) =>
+  buildApiError(errors.INVALID_SIGNATURES, message);
+
 export const ErrorFactory = {
   unmappedError,
   databaseConnectionError,
   databaseError,
   subjectExistsError,
   subjectNotFoundError,
+  invalidSignatures,
 };
