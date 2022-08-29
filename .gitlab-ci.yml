@@ -17,19 +17,15 @@ stages:
   - test
   - package
 
-installPython:
-  before_script:
+lint:
+  image: docker.atixlabs.com/node:16.16.0-alpine
+  stage: lint
+  script:
     - apt-get -y update
     - apt-get -y install software-properties-common
     - add-apt-repository -y ppa:deadsnakes/ppa
     - apt-get -y update
     - apt-get -y install python3.8  python-pip3
-
-lint:
-  image: docker.atixlabs.com/node:16.16.0-alpine
-  stage: lint
-  extends: before_script
-  script:
     - npm ci
     - npm run lint
   except:
@@ -40,8 +36,12 @@ test:
   variables:
     NODE_ENV: test
   stage: test
-  extends: before_script
   script:
+    - apt-get -y update
+    - apt-get -y install software-properties-common
+    - add-apt-repository -y ppa:deadsnakes/ppa
+    - apt-get -y update
+    - apt-get -y install python3.8  python-pip3
     - npm ci
     - npm run test:unit
     - npm run test:integration
