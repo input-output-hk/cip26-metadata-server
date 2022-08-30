@@ -53,8 +53,7 @@ package:
     DB_CLUSTER: $DB_CLUSTER
     DB_NAME: $DB_NAME
   script:
-    - apk add docker git
-    - apk add g++ make py3-pip
+    - apk add docker git g++ make py3-pip
     - docker login -u gitlabci -p $CI_JOB_TOKEN $CI_REGISTRY
     - npm cache clean --force
     - npm run docker:build
