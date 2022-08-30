@@ -151,17 +151,19 @@ describe('GET /metadata/:subject/properties', () => {
 });
 
 describe('GET /metadata/:subject/property/:propertyName', () => {
-  test("should return the property value of the given property name: 'entry1' for an object with subject: 'sub'", async () => {
-    const response = await request(connectionString).get('/metadata/sub/property/entry1');
+  test("should return the property value of the given property name: 'entry_property1' for an object with subject: 'valid'", async () => {
+    const response = await request(connectionString).get(
+      '/metadata/valid/property/entry_property1'
+    );
     expect(response.body).toStrictEqual({
-      entry1: {
-        value: 123,
+      entry_property1: {
+        value: 'valid 1',
         sequenceNumber: 1,
         signatures: [
           {
             signature:
-              '3132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333a',
-            publicKey: '123456789012345678901234567890123456789012345678901234567890123a',
+              '25836958b24118416e056cedd9019729d8941d338858bdcd5dfd0ca76dda29ccf021286296544a6f88b335c09dcc10da660bd6e890db4f6e0bfa1b27794ba000',
+            publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
           },
         ],
       },
@@ -226,8 +228,8 @@ describe('GET /metadata/:subject/property/:propertyName', () => {
         signatures: [
           {
             signature:
-              '3132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333F',
-            publicKey: '123456789012345678901234567890123456789012345678901234567890123F',
+              '492fb358cf3e15bb65c08182a52918ee5b4185afe9ed43ce49a68ee0bc2becebe782d5acd348b636ad28a144c3aa07135f0dc38de2949b4d3e72f85d39020002',
+            publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
           },
         ],
       },
@@ -245,8 +247,8 @@ describe('GET /metadata/:subject/property/:propertyName', () => {
         signatures: [
           {
             signature:
-              '3132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333F',
-            publicKey: '123456789012345678901234567890123456789012345678901234567890123F',
+              'f8e4b084c40c92904f162e703335e48c203f4f042217f6b3b2bb529424f89da313cb93af4e29857df563fcac35c406527e7e2588cdc9a0baf34a00635e294201',
+            publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
           },
         ],
       },
