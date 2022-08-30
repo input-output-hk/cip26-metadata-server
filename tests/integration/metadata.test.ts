@@ -39,11 +39,73 @@ describe('POST /metadata', () => {
       .send(validObjectWithManyProperties);
     expect(response.status).toEqual(201);
   });
+
+  test('should fail if all of the signatures are invalid for a property. Check status', async () => {
+    const response = await request(connectionString)
+      .post('/metadata')
+      .send({
+        ...validObjectWithOneEntry,
+        entry_property1: {
+          ...validObjectWithOneEntry.entry_property1,
+          signatures: [
+            {
+              signature:
+                '25836958b24118416e056cedd9019729d8941d338858bdcd5dfd0ca76dda29ccf021286296544a6f88b335c09dcc10da660bd6e890db4f6e0bfa1b27794ba001',
+              publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
+            },
+          ],
+        },
+      });
+    expect(response.status).toEqual(400);
+  });
+
+  test('should fail if all of the signatures are invalid for a property. Check internalCode', async () => {
+    const response = await request(connectionString)
+      .post('/metadata')
+      .send({
+        ...validObjectWithOneEntry,
+        entry_property1: {
+          ...validObjectWithOneEntry.entry_property1,
+          signatures: [
+            {
+              signature:
+                '25836958b24118416e056cedd9019729d8941d338858bdcd5dfd0ca76dda29ccf021286296544a6f88b335c09dcc10da660bd6e890db4f6e0bfa1b27794ba001',
+              publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
+            },
+          ],
+        },
+      });
+    expect(response.body.internalCode).toEqual('invalidSignatures');
+  });
+
+  test('should pass if on of the signatures is valid for a property', async () => {
+    const response = await request(connectionString)
+      .post('/metadata')
+      .send({
+        ...validObjectWithOneEntry,
+        entry_property1: {
+          ...validObjectWithOneEntry.entry_property1,
+          signatures: [
+            {
+              signature:
+                '25836958b24118416e056cedd9019729d8941d338858bdcd5dfd0ca76dda29ccf021286296544a6f88b335c09dcc10da660bd6e890db4f6e0bfa1b27794ba001',
+              publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
+            },
+            {
+              signature:
+                '25836958b24118416e056cedd9019729d8941d338858bdcd5dfd0ca76dda29ccf021286296544a6f88b335c09dcc10da660bd6e890db4f6e0bfa1b27794ba000',
+              publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
+            },
+          ],
+        },
+      });
+    expect(response.body.internalCode).toEqual('subjectExistsError');
+  });
 });
 
 describe('GET /metadata/:subject', () => {
-  test("should retrieve an existing metadata object with subject: 'sub'", async () => {
-    const response = await request(connectionString).get('/metadata/sub');
+  test("should retrieve an existing metadata object with subject: 'valid'", async () => {
+    const response = await request(connectionString).get('/metadata/valid');
     expect(response.body).toStrictEqual(validObjectWithOneEntry);
   });
 
@@ -57,9 +119,9 @@ describe('GET /metadata/:subject', () => {
 });
 
 describe('GET /metadata/:subject/properties', () => {
-  test("should retrieve all property names of an existing metadata object with subject: 'sub'", async () => {
-    const response = await request(connectionString).get('/metadata/sub/properties');
-    expect(response.body).toStrictEqual(['subject', 'entry1']);
+  test("should retrieve all property names of an existing metadata object with subject: 'valid'", async () => {
+    const response = await request(connectionString).get('/metadata/valid/properties');
+    expect(response.body).toStrictEqual(['subject', 'entry_property1']);
   });
 
   test("should retrieve all property names of an existing metadata object with subject: 'valid1'", async () => {
