@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { Metadata } from '../../types/metadata';
+import { ErrorFactory } from '../errors/error-factory';
 import { Logger } from '../logger/logger';
 import metadataMappers from '../mappers/metadata';
 import { CustomRequest } from '../middlewares/metadata';
@@ -18,6 +19,11 @@ export interface MetadataHandler {
     next: NextFunction
   ): Promise<Response<Metadata> | void>;
   getPropertyNames(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response<string[]> | void>;
+  getProperty(
     request: Request,
     response: Response,
     next: NextFunction
@@ -71,6 +77,29 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
       return response.status(200).send(Object.keys(metadataObject));
     } catch (error) {
       logger.log.error('[Handler][getPropertyNames] Error retrieving property names');
+      return next(error);
+    }
+  },
+
+  getProperty: async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response<string[]> | void> => {
+    try {
+      const propertyName = request.params.propertyName;
+      const { metadataObject } = request as CustomRequest;
+      delete metadataObject._id;
+      if (!(propertyName in metadataObject)) {
+        logger.log.error(
+          `[Handlers][getProperty] Metadata object with subject '${metadataObject.subject}' does not contains property '${propertyName}'`
+        );
+        throw ErrorFactory.propertyNotFoundError(`Property '${propertyName}' does not exists`);
+      }
+      const mappedObject = metadataMappers.mapGetObjectBySubjectResponse(metadataObject);
+      return response.status(200).send({ [propertyName]: mappedObject[propertyName] });
+    } catch (error) {
+      logger.log.error('[Handler][getProperty] Error retrieving property');
       return next(error);
     }
   },

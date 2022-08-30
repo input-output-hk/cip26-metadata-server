@@ -1,4 +1,5 @@
 /* eslint-disable unicorn/no-useless-undefined */
+import { ErrorFactory } from '../../../src/server/errors/error-factory';
 import { configure } from '../../../src/server/handlers';
 import { MetadataHandler } from '../../../src/server/handlers/metadata';
 import { Logger } from '../../../src/server/logger/logger';
@@ -112,6 +113,69 @@ describe('Metadata handlers', () => {
         next
       );
       expect(mockResponse.send).toHaveBeenCalledWith([]);
+    });
+  });
+
+  describe('Method getProperty', () => {
+    test('should return response status 200 when the given property of an existing object is retrieved', async () => {
+      await metadataHandler.getProperty(
+        mockCustomRequest(objectFromDatabase, {
+          subject: objectFromDatabase.subject,
+          propertyName: 'subject',
+        }),
+        mockResponse,
+        next
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+    });
+
+    test("should retrieve the value of the given property 'subject' if that property does exist in a metadata object", async () => {
+      await metadataHandler.getProperty(
+        mockCustomRequest(objectFromDatabase, {
+          subject: objectFromDatabase.subject,
+          propertyName: 'subject',
+        }),
+        mockResponse,
+        next
+      );
+      expect(mockResponse.send).toHaveBeenCalledWith({ subject: 'subject object #2' });
+    });
+
+    test("should retrieve the value of the given property 'entry1' with the highest sequenceNumber", async () => {
+      await metadataHandler.getProperty(
+        mockCustomRequest(objectFromDatabase, {
+          subject: objectFromDatabase.subject,
+          propertyName: 'entry',
+        }),
+        mockResponse,
+        next
+      );
+      expect(mockResponse.send).toHaveBeenCalledWith({
+        entry: {
+          value: 'value object #2, version 2 ',
+          sequenceNumber: 2,
+          signatures: [
+            {
+              signature: '79a4601',
+              publicKey: 'bc77d04',
+            },
+          ],
+        },
+      });
+    });
+
+    test("should throw an error if the given property 'unexisting' does not exists in the metadata object", async () => {
+      await metadataHandler.getProperty(
+        mockCustomRequest(objectFromDatabase, {
+          subject: objectFromDatabase.subject,
+          propertyName: 'unexisting',
+        }),
+        mockResponse,
+        next
+      );
+      expect(next).toHaveBeenCalledWith(
+        ErrorFactory.propertyNotFoundError("Property 'unexisting' does not exists")
+      );
     });
   });
 });
