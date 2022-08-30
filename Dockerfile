@@ -6,7 +6,7 @@ RUN mkdir -p /application
 COPY . /application/
 WORKDIR /application/
 # install
-RUN npm install
+RUN npm ci
 # build
 WORKDIR /application
 RUN npm run build
