@@ -62,3 +62,4 @@ package:
     refs:
       # Only run on main
       - main
+      - build
