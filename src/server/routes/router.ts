@@ -35,7 +35,7 @@ const buildRoutes = (
   );
   server.post(
     '/metadata/query',
-    schemaValidatorMiddleware.validateQueryRequestBody,
+    schemaValidatorMiddleware.validateBatchQueryRequestBody,
     metadataHandler.queryObjects
   );
 };

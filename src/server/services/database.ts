@@ -45,11 +45,11 @@ const configure = (logger: Logger, database: Db): DatabaseService => ({
           projection[property] = 1;
         }
       }
-      const objects = (await database
+      const objects = await database
         .collection(DATABASE_COLLECTIONS.METADATA)
         // eslint-disable-next-line unicorn/no-array-callback-reference, unicorn/no-array-method-this-argument
         .find(query, { projection })
-        .toArray()) as Document[];
+        .toArray();
       logger.log.info('[Services][queryObjects] Query results retrieved from db');
       return objects;
     } catch (error) {

@@ -60,8 +60,10 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     next: NextFunction
   ): Promise<Response<Metadata> | void> => {
     try {
+      logger.log.info('[Handlers][getObjectBySubject] Retrieving metadata object');
       const { metadataObject } = request as CustomRequest;
       delete metadataObject._id;
+      logger.log.info('[Handlers][getObjectBySubject] Metada object retrieved');
       return response
         .status(200)
         .send(metadataMappers.mapGetObjectBySubjectResponse(metadataObject));
@@ -77,8 +79,10 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     next: NextFunction
   ): Promise<Response<string[]> | void> => {
     try {
+      logger.log.info('[Handlers][getPropertyNames] Retrieving property names');
       const { metadataObject } = request as CustomRequest;
       delete metadataObject._id;
+      logger.log.info('[Handlers][getPropertyNames] Property names retrieved');
       return response.status(200).send(Object.keys(metadataObject));
     } catch (error) {
       logger.log.error('[Handler][getPropertyNames] Error retrieving property names');
@@ -92,6 +96,7 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     next: NextFunction
   ): Promise<Response<object> | void> => {
     try {
+      logger.log.info('[Handlers][getProperty] Retrieving property');
       const propertyName = request.params.propertyName;
       const { metadataObject } = request as CustomRequest;
       delete metadataObject._id;
@@ -102,6 +107,7 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
         throw ErrorFactory.propertyNotFoundError(`Property '${propertyName}' does not exists`);
       }
       const mappedObject = metadataMappers.mapGetObjectBySubjectResponse(metadataObject);
+      logger.log.info('[Handlers][getProperty] Property retrieved');
       return response.status(200).send({ [propertyName]: mappedObject[propertyName] });
     } catch (error) {
       logger.log.error('[Handler][getProperty] Error retrieving property');
@@ -115,18 +121,17 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     next: NextFunction
   ): Promise<Response<object[]> | void> => {
     try {
+      logger.log.info('[Handlers][queryObjects] Querying metadata objects');
       const { subjects, properties } = request.body;
       const metadataObjects = await services.databaseService.queryObjects(subjects, properties);
-      const mappedObjects: object[] = [];
-      if (metadataObjects) {
-        for (const metadataObject of metadataObjects) {
-          delete metadataObject._id;
-          mappedObjects.push(metadataMappers.mapGetObjectBySubjectResponse(metadataObject));
-        }
-      }
+      const mappedObjects = metadataObjects?.map((metadataObject) => {
+        delete metadataObject._id;
+        return metadataMappers.mapGetObjectBySubjectResponse(metadataObject);
+      });
+      logger.log.info('[Handlers][queryObjects] Query results retrieved');
       return response.status(200).send(mappedObjects);
     } catch (error) {
-      logger.log.error('[Handler][queryObjects] Error querying objects');
+      logger.log.error('[Handler][queryObjects] Error querying metadata objects');
       return next(error);
     }
   },

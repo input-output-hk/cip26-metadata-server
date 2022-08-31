@@ -10,7 +10,7 @@ import { Logger } from '../logger/logger';
 
 export interface SchemaValidatorMiddleware {
   validateSchema(request: Request, response: Response, next: NextFunction);
-  validateQueryRequestBody(request: Request, response: Response, next: NextFunction);
+  validateBatchQueryRequestBody(request: Request, response: Response, next: NextFunction);
 }
 
 const validateBase64: DataValidateFunction = (value) => {
@@ -84,16 +84,16 @@ const configure = (logger: Logger): SchemaValidatorMiddleware => {
       }
     },
 
-    validateQueryRequestBody: (request: Request, response: Response, next: NextFunction) => {
-      logger.log.info('[Middlewares][validateQueryRequestBody] Validating query request body');
+    validateBatchQueryRequestBody: (request: Request, response: Response, next: NextFunction) => {
+      logger.log.info('[Middlewares][validateBatchQueryRequestBody] Validating query request body');
       if (validateQuery(request.body)) {
         logger.log.info(
-          '[Middlewares][validateQueryRequestBody] Successful query request body validation'
+          '[Middlewares][validateBatchQueryRequestBody] Successful query request body validation'
         );
         return next();
       } else {
         logger.log.error(
-          '[Middlewares][validateQueryRequestBody] Errors found in query request body validation'
+          '[Middlewares][validateBatchQueryRequestBody] Errors found in query request body validation'
         );
         return next(new ValidationError(validateQuery.errors));
       }

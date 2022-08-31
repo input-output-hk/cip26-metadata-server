@@ -850,9 +850,9 @@ describe('Schema validator middlewares', () => {
     });
   });
 
-  describe('Method validateQueryRequestBody', () => {
+  describe('Method validateBatchQueryRequestBody', () => {
     test('should validate that request body contains required property "subjects"', async () => {
-      await schemaValidator.validateQueryRequestBody(mockRequest({}), mockResponse, next);
+      await schemaValidator.validateBatchQueryRequestBody(mockRequest({}), mockResponse, next);
       expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
         {
           instancePath: '',
@@ -867,7 +867,7 @@ describe('Schema validator middlewares', () => {
     });
 
     test("should validate that both 'subjects' and 'properties' are arrays", async () => {
-      await schemaValidator.validateQueryRequestBody(
+      await schemaValidator.validateBatchQueryRequestBody(
         mockRequest({ subjects: {}, properties: '' }),
         mockResponse,
         next
@@ -895,7 +895,7 @@ describe('Schema validator middlewares', () => {
     });
 
     test("should validate that neither 'subjects' nor 'properties' are empty arrays", async () => {
-      await schemaValidator.validateQueryRequestBody(
+      await schemaValidator.validateBatchQueryRequestBody(
         mockRequest({ subjects: [], properties: [] }),
         mockResponse,
         next
@@ -923,7 +923,7 @@ describe('Schema validator middlewares', () => {
     });
 
     test("should validate that both 'subjects' and 'properties' are lists of strings", async () => {
-      await schemaValidator.validateQueryRequestBody(
+      await schemaValidator.validateBatchQueryRequestBody(
         mockRequest({ subjects: ['a', 'b', '', 1], properties: [true] }),
         mockResponse,
         next
@@ -951,7 +951,7 @@ describe('Schema validator middlewares', () => {
     });
 
     test('should validate that request body does not contain additional properties', async () => {
-      await schemaValidator.validateQueryRequestBody(
+      await schemaValidator.validateBatchQueryRequestBody(
         mockRequest({ extra_property: ['a', 'b'], properties: [''] }),
         mockResponse,
         next
