@@ -7,6 +7,7 @@ import { DATABASE_COLLECTIONS } from '../utils/constants';
 export interface DatabaseService {
   getObject(filters: Record<string, unknown>): Promise<Document | null>;
   insertObject(object: Record<string, unknown>): Promise<string>;
+  queryObjects(subjects: string[], properties: string[]): Promise<Document[] | null>;
 }
 
 const configure = (logger: Logger, database: Db): DatabaseService => ({
@@ -31,6 +32,31 @@ const configure = (logger: Logger, database: Db): DatabaseService => ({
     } catch (error) {
       logger.log.error(`[Services][insertObject] Could not insert object. Error: ${error}`);
       throw ErrorFactory.databaseError(`Could not insert object. Error: ${error}`);
+    }
+  },
+
+  queryObjects: async (subjects: string[], properties: string[] = []) => {
+    logger.log.info('[Services][queryObjects] Querying objects from db');
+    try {
+      const query = { subject: { $in: subjects } };
+      const projection = {};
+      if (properties.length > 0) {
+        for (const property of properties) {
+          projection[property] = 1;
+        }
+      }
+      const objects = (await database
+        .collection(DATABASE_COLLECTIONS.METADATA)
+        // eslint-disable-next-line unicorn/no-array-callback-reference, unicorn/no-array-method-this-argument
+        .find(query, { projection })
+        .toArray()) as Document[];
+      logger.log.info('[Services][queryObjects] Query results retrieved from db');
+      return objects;
+    } catch (error) {
+      logger.log.error(
+        `[Services][queryObjects] Could not retrieve query results. Error: ${error}`
+      );
+      throw ErrorFactory.databaseError(`Could not retrieve query results. Error: ${error}`);
     }
   },
 });

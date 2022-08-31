@@ -11,6 +11,7 @@ const services = {
   databaseService: {
     getObject: jest.fn(),
     insertObject: jest.fn(),
+    queryObjects: jest.fn(),
   },
 };
 

@@ -4,11 +4,13 @@ import addFormats from 'ajv-formats';
 import { NextFunction, Request, Response } from 'express';
 
 import { ValidationError } from '../errors/error-factory';
+import queryRequestBodySchema from '../helpers/schemas/query-request-body.json';
 import schema from '../helpers/schemas/schema.json';
 import { Logger } from '../logger/logger';
 
 export interface SchemaValidatorMiddleware {
   validateSchema(request: Request, response: Response, next: NextFunction);
+  validateQueryRequestBody(request: Request, response: Response, next: NextFunction);
 }
 
 const validateBase64: DataValidateFunction = (value) => {
@@ -62,8 +64,14 @@ const getValidateFunction = () => {
   return ajv.compile(schema);
 };
 
+const getValidateQueryFunction = () => {
+  const ajv = new Ajv({ strict: false, allErrors: true });
+  return ajv.compile(queryRequestBodySchema);
+};
+
 const configure = (logger: Logger): SchemaValidatorMiddleware => {
   const validate = getValidateFunction();
+  const validateQuery = getValidateQueryFunction();
   return {
     validateSchema: (request: Request, response: Response, next: NextFunction) => {
       logger.log.info('[Middlewares][validateSchema] Validating json schema');
@@ -73,6 +81,21 @@ const configure = (logger: Logger): SchemaValidatorMiddleware => {
       } else {
         logger.log.error('[Middlewares][validateSchema] Errors found in json schema validation');
         return next(new ValidationError(validate.errors));
+      }
+    },
+
+    validateQueryRequestBody: (request: Request, response: Response, next: NextFunction) => {
+      logger.log.info('[Middlewares][validateQueryRequestBody] Validating query request body');
+      if (validateQuery(request.body)) {
+        logger.log.info(
+          '[Middlewares][validateQueryRequestBody] Successful query request body validation'
+        );
+        return next();
+      } else {
+        logger.log.error(
+          '[Middlewares][validateQueryRequestBody] Errors found in query request body validation'
+        );
+        return next(new ValidationError(validateQuery.errors));
       }
     },
   };

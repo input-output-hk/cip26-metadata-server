@@ -111,3 +111,33 @@ export const validationErrors = [
     message: 'must NOT have fewer than 128 characters',
   },
 ];
+
+export const queryValidationErrors = [
+  {
+    instancePath: '',
+    schemaPath: '#/required',
+    keyword: 'required',
+    params: {
+      missingProperty: 'subjects',
+    },
+    message: "must have required property 'subjects'",
+  },
+  {
+    instancePath: '',
+    schemaPath: '#/additionalProperties',
+    keyword: 'additionalProperties',
+    params: {
+      additionalProperty: 'invalid_list_of_subjects',
+    },
+    message: 'must NOT have additional properties',
+  },
+  {
+    instancePath: '/properties',
+    schemaPath: '#/properties/properties/minItems',
+    keyword: 'minItems',
+    params: {
+      limit: 1,
+    },
+    message: 'must NOT have fewer than 1 items',
+  },
+];

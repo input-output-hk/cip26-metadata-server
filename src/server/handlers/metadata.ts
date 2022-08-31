@@ -27,7 +27,12 @@ export interface MetadataHandler {
     request: Request,
     response: Response,
     next: NextFunction
-  ): Promise<Response<string[]> | void>;
+  ): Promise<Response<object> | void>;
+  queryObjects(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response<object[]> | void>;
 }
 
 const configure = (logger: Logger, services: Services): MetadataHandler => ({
@@ -85,7 +90,7 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     request: Request,
     response: Response,
     next: NextFunction
-  ): Promise<Response<string[]> | void> => {
+  ): Promise<Response<object> | void> => {
     try {
       const propertyName = request.params.propertyName;
       const { metadataObject } = request as CustomRequest;
@@ -100,6 +105,28 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
       return response.status(200).send({ [propertyName]: mappedObject[propertyName] });
     } catch (error) {
       logger.log.error('[Handler][getProperty] Error retrieving property');
+      return next(error);
+    }
+  },
+
+  queryObjects: async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response<object[]> | void> => {
+    try {
+      const { subjects, properties } = request.body;
+      const metadataObjects = await services.databaseService.queryObjects(subjects, properties);
+      const mappedObjects: object[] = [];
+      if (metadataObjects) {
+        for (const metadataObject of metadataObjects) {
+          delete metadataObject._id;
+          mappedObjects.push(metadataMappers.mapGetObjectBySubjectResponse(metadataObject));
+        }
+      }
+      return response.status(200).send(mappedObjects);
+    } catch (error) {
+      logger.log.error('[Handler][queryObjects] Error querying objects');
       return next(error);
     }
   },
