@@ -109,6 +109,22 @@ paths:
                   - $ref: '#/components/schemas/MetadataObjectPropertyEntry'
         '404':
           description: Metadata object or property not found
+  /metadata/query:
+    post:
+      summary: Get a list of metadata objects according to the rules defined in the request body
+      description: "If only 'subjects' is supplied, this query will return a list of subjects with all their properties.\n\n If 'subjects' and 'properties' are supplied, the query will return a list of subjects, with their properties narrowed down to only those specified by 'properties'."
+      operationId: metadata-query
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetadataQuery'
+        required: true
+      responses:
+        '200':
+          description: Query results retrieved
+        '500':
+          description: Server unavailable
 components:
   schemas:
     Healthcheck:
@@ -304,6 +320,23 @@ components:
                   format: base16
                   minLength: 128
                   maxLength: 128
+    MetadataQuery:
+      type: object
+      additionalProperties: false
+      required: ['subjects']
+      properties:
+        subjects:
+          summary: A list of subjects, encoded as strings
+          type: array
+          minItems: 1
+          items:
+            type: string
+        properties:
+          summary: An optional list of property names, encoded as strings
+          type: array
+          minItems: 1
+          items:
+            type: string
     MetadataCreationBody:
       type: object
       required: ['subject']

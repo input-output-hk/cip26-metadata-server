@@ -3,6 +3,7 @@ import request from 'supertest';
 
 import {
   invalidObject,
+  queryValidationErrors,
   validationErrors,
   validObjectWithManyProperties,
   validObjectWithOneEntry,
@@ -269,5 +270,74 @@ describe('GET /metadata/:subject/property/:propertyName', () => {
       internalCode: 'propertyNotFoundError',
       message: "Property 'unexisting' does not exists",
     });
+  });
+});
+
+describe('POST /metadata/query', () => {
+  test('should not allow to query metadata objects when request body is invalid', async () => {
+    const response = await request(connectionString)
+      .post('/metadata/query')
+      .send({ invalid_list_of_subjects: ['valid', 'valid1'], properties: [] });
+    expect(response.body).toStrictEqual(queryValidationErrors);
+  });
+
+  test('should return a list of metadata objects with all their properties when only a list of subjects is provided', async () => {
+    const response = await request(connectionString)
+      .post('/metadata/query')
+      .send({ subjects: ['valid', 'unexisting', 'valid1'] });
+    expect(response.body).toStrictEqual([
+      { ...validObjectWithOneEntry },
+      { ...validObjectWithManyProperties },
+    ]);
+  });
+
+  test('should return a one item list of metadata objects with a single property when single subject & single property are provided', async () => {
+    const response = await request(connectionString)
+      .post('/metadata/query')
+      .send({ subjects: ['valid'], properties: ['entry_property1'] });
+    expect(response.body).toStrictEqual([
+      { entry_property1: validObjectWithOneEntry.entry_property1 },
+    ]);
+  });
+
+  test('should return an empty list of metadata objects when only unexisting subjects are provided', async () => {
+    const response = await request(connectionString)
+      .post('/metadata/query')
+      .send({ subjects: ['unexisting'] });
+    expect(response.body).toStrictEqual([]);
+  });
+
+  test("should return a list of metadata objects with their properties narrowed down to only those specified by 'properties'", async () => {
+    const response = await request(connectionString)
+      .post('/metadata/query')
+      .send({
+        subjects: ['valid', 'valid1'],
+        properties: ['subject', 'policy', 'preimage', 'name', 'description', 'ticker', 'decimals'],
+      });
+    expect(response.body).toStrictEqual([
+      { subject: 'valid' },
+      {
+        subject: 'valid1',
+        policy: 'FFFFFF00000000001111111111222222222233333333334444444444',
+        preimage: {
+          alg: 'sha1',
+          msg: 'AADDBBCC',
+        },
+        name: 'This is the name',
+        description: 'This is the description',
+        ticker: 'ADA/USDT',
+        decimals: 18,
+      },
+    ]);
+  });
+
+  test('should return a list of empty objects when only unexisting properties are provided', async () => {
+    const response = await request(connectionString)
+      .post('/metadata/query')
+      .send({
+        subjects: ['valid', 'valid1'],
+        properties: ['unexisting', 'other'],
+      });
+    expect(response.body).toStrictEqual([{}, {}]);
   });
 });

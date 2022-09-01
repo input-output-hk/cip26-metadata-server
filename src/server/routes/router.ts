@@ -33,6 +33,11 @@ const buildRoutes = (
     metadataMiddleware.checkSubjectExists,
     metadataHandler.getProperty
   );
+  server.post(
+    '/metadata/query',
+    schemaValidatorMiddleware.validateBatchQueryRequestBody,
+    metadataHandler.queryObjects
+  );
 };
 
 export default buildRoutes;
