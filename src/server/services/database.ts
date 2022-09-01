@@ -40,10 +40,8 @@ const configure = (logger: Logger, database: Db): DatabaseService => ({
     try {
       const query = { subject: { $in: subjects } };
       const projection = {};
-      if (properties.length > 0) {
-        for (const property of properties) {
-          projection[property] = 1;
-        }
+      for (const property of properties) {
+        projection[property] = 1;
       }
       const objects = await database
         .collection(DATABASE_COLLECTIONS.METADATA)

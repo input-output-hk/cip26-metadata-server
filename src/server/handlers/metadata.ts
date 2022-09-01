@@ -124,11 +124,11 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
       logger.log.info('[Handlers][queryObjects] Querying metadata objects');
       const { subjects, properties } = request.body;
       const metadataObjects = await services.databaseService.queryObjects(subjects, properties);
+      logger.log.info('[Handlers][queryObjects] Query results retrieved');
       const mappedObjects = metadataObjects?.map((metadataObject) => {
         delete metadataObject._id;
         return metadataMappers.mapGetObjectBySubjectResponse(metadataObject);
       });
-      logger.log.info('[Handlers][queryObjects] Query results retrieved');
       return response.status(200).send(mappedObjects);
     } catch (error) {
       logger.log.error('[Handler][queryObjects] Error querying metadata objects');
