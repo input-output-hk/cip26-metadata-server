@@ -1,0 +1,64 @@
+{
+  "additionalProperties": {
+    "$ref": "#/definitions/entry"
+  },
+  "properties": {
+    "subject": false,
+    "policy": false,
+    "preimage": false,
+    "name": false,
+    "description": false,
+    "ticker": false,
+    "decimals": false,
+    "url": false,
+    "logo": false
+  },
+  "definitions": {
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "sequenceNumber", "signatures"],
+      "properties": {
+        "value": {},
+        "sequenceNumber": {
+          "$ref": "#/definitions/sequenceNumber"
+        },
+        "signatures": {
+          "$ref": "#/definitions/signatures"
+        }
+      }
+    },
+    "sequenceNumber": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/signature"
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["publicKey", "signature"],
+      "properties": {
+        "publicKey": {
+          "type": "string",
+          "description": "An Ed25519 Public key, verifying the companion signature.",
+          "contentEncoding": "base16",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "signature": {
+          "type": "string",
+          "description": "A signed attestation.",
+          "contentEncoding": "base16",
+          "minLength": 128,
+          "maxLength": 128
+        }
+      }
+    }
+  }
+}

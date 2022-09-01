@@ -5,10 +5,12 @@ import { NextFunction, Request, Response } from 'express';
 
 import { ValidationError } from '../errors/error-factory';
 import schema from '../helpers/schemas/schema.json';
+import updateSchema from '../helpers/schemas/update-schema.json';
 import { Logger } from '../logger/logger';
 
 export interface SchemaValidatorMiddleware {
   validateSchema(request: Request, response: Response, next: NextFunction);
+  validateUpdateSchema(request: Request, response: Response, next: NextFunction);
 }
 
 const validateBase64: DataValidateFunction = (value) => {
@@ -62,8 +64,30 @@ const getValidateFunction = () => {
   return ajv.compile(schema);
 };
 
+const getValidateUpdateFunction = () => {
+  const ajv = new Ajv({ strict: false, allErrors: true });
+  addFormats(ajv);
+  ajv.removeKeyword('contentEncoding');
+  ajv.addKeyword({
+    keyword: 'contentEncoding',
+    compile: (schema) => {
+      switch (schema) {
+        case 'base64':
+          return validateBase64;
+        case 'base16':
+          return validateBase16;
+        default:
+          return () => true;
+      }
+    },
+    errors: true,
+  });
+  return ajv.compile(updateSchema);
+};
+
 const configure = (logger: Logger): SchemaValidatorMiddleware => {
   const validate = getValidateFunction();
+  const validateUpdate = getValidateUpdateFunction();
   return {
     validateSchema: (request: Request, response: Response, next: NextFunction) => {
       logger.log.info('[Middlewares][validateSchema] Validating json schema');
@@ -73,6 +97,17 @@ const configure = (logger: Logger): SchemaValidatorMiddleware => {
       } else {
         logger.log.error('[Middlewares][validateSchema] Errors found in json schema validation');
         return next(new ValidationError(validate.errors));
+      }
+    },
+
+    validateUpdateSchema: (request: Request, response: Response, next: NextFunction) => {
+      logger.log.info('[Middlewares][validateUpdateSchema] Validating update schema');
+      if (validateUpdate(request.body)) {
+        logger.log.info('[Middlewares][validateUpdateSchema] Successful update schema validation');
+        return next();
+      } else {
+        logger.log.error('[Middlewares][validateSchema] Errors found in update schema validation');
+        return next(new ValidationError(validateUpdate.errors));
       }
     },
   };

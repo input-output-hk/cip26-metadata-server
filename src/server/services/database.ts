@@ -7,6 +7,13 @@ import { DATABASE_COLLECTIONS } from '../utils/constants';
 export interface DatabaseService {
   getObject(filters: Record<string, unknown>): Promise<Document | null>;
   insertObject(object: Record<string, unknown>): Promise<string>;
+  updateObject(
+    filters: Record<string, unknown>,
+    updates: {
+      creations: Record<string, unknown>;
+      editions: Record<string, unknown>;
+    }
+  ): Promise<boolean>;
 }
 
 const configure = (logger: Logger, database: Db): DatabaseService => ({
@@ -28,6 +35,25 @@ const configure = (logger: Logger, database: Db): DatabaseService => ({
       const response = await database.collection(DATABASE_COLLECTIONS.METADATA).insertOne(object);
       logger.log.info('[Services][insertObject] Object inserted on db');
       return response.insertedId.toString();
+    } catch (error) {
+      logger.log.error(`[Services][insertObject] Could not insert object. Error: ${error}`);
+      throw ErrorFactory.databaseError(`Could not insert object. Error: ${error}`);
+    }
+  },
+
+  updateObject: async (filters, updates) => {
+    logger.log.info('[Services][updateObject] Inserting object on db');
+    try {
+      await database.collection(DATABASE_COLLECTIONS.METADATA).updateOne(
+        filters,
+        {
+          $set: updates.creations,
+          $addToSet: updates.editions,
+        },
+        { upsert: true }
+      );
+      logger.log.info('[Services][insertObject] Object inserted on db');
+      return true;
     } catch (error) {
       logger.log.error(`[Services][insertObject] Could not insert object. Error: ${error}`);
       throw ErrorFactory.databaseError(`Could not insert object. Error: ${error}`);

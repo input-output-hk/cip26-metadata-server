@@ -24,6 +24,15 @@ const buildRoutes = (
     metadataMiddleware.checkSubjectExists,
     metadataHandler.getPropertyNames
   );
+  server.put(
+    '/metadata/:subject',
+    [
+      schemaValidatorMiddleware.validateUpdateSchema,
+      metadataMiddleware.checkSubjectExists,
+      metadataMiddleware.checkSequenceNumbers,
+    ],
+    metadataHandler.updateObject
+  );
 };
 
 export default buildRoutes;
