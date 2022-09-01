@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 export const validObjectWithOneEntry = {
   subject: 'valid',
   entry_property1: {
@@ -112,6 +113,27 @@ export const validationErrors = [
   },
 ];
 
+export const invalidObjectSanitizationErrors = [
+  {
+    instancePath: '',
+    schemaPath: '#/required',
+    keyword: 'required',
+    params: {
+      missingProperty: 'subject',
+    },
+    message: "must have required property 'subject'",
+  },
+  {
+    instancePath: '/_ubject$__',
+    schemaPath: '#/type',
+    keyword: 'type',
+    params: {
+      type: 'object',
+    },
+    message: 'must be object',
+  },
+];
+
 export const queryValidationErrors = [
   {
     instancePath: '',
@@ -139,5 +161,35 @@ export const queryValidationErrors = [
       limit: 1,
     },
     message: 'must NOT have fewer than 1 items',
+  },
+];
+
+export const querySanitizationErrors = [
+  {
+    instancePath: '',
+    schemaPath: '#/required',
+    keyword: 'required',
+    params: {
+      missingProperty: 'subjects',
+    },
+    message: "must have required property 'subjects'",
+  },
+  {
+    instancePath: '',
+    schemaPath: '#/additionalProperties',
+    keyword: 'additionalProperties',
+    params: {
+      additionalProperty: '_ubject$__',
+    },
+    message: 'must NOT have additional properties',
+  },
+  {
+    instancePath: '',
+    schemaPath: '#/additionalProperties',
+    keyword: 'additionalProperties',
+    params: {
+      additionalProperty: 'prop_erti_es',
+    },
+    message: 'must NOT have additional properties',
   },
 ];

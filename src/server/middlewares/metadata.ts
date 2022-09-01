@@ -17,6 +17,7 @@ export interface CustomRequest extends Request {
 const configure = (logger: Logger, services: Services): MetadataMiddleware => {
   return {
     checkSubjectExists: async (request: Request, response: Response, next: NextFunction) => {
+      sanitize(request, logger);
       const subject = request.params.subject;
       logger.log.info(
         `[Middlewares][checkSubjectExists] Checking that metadata object with subject '${subject}' exists`
@@ -27,7 +28,9 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
           `[Middlewares][checkSubjectExists] Metadata object with subject '${subject}' does not exists`
         );
         return next(
-          ErrorFactory.subjectNotFoundError('A metadata object with that subject does not exists')
+          ErrorFactory.subjectNotFoundError(
+            `A metadata object with subject '${subject}' does not exists`
+          )
         );
       }
       logger.log.info(
@@ -58,6 +61,21 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
       return next();
     },
   };
+};
+
+const sanitize = (request: Request, logger: Logger) => {
+  for (const parameter in request.params) {
+    const hasProhibited =
+      request.params[parameter].includes('$') || request.params[parameter].includes('.');
+    if (hasProhibited) {
+      while (request.params[parameter].includes('$') || request.params[parameter].includes('.')) {
+        request.params[parameter] = request.params[parameter].replace('$', '_').replace('.', '_');
+      }
+      logger.log.warn(
+        `Incomming request to ${request.path} contains invalid characters in param ${parameter}. Those characters were replaced by '_'`
+      );
+    }
+  }
 };
 
 export default configure;

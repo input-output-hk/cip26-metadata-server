@@ -3,6 +3,8 @@ import request from 'supertest';
 
 import {
   invalidObject,
+  invalidObjectSanitizationErrors,
+  querySanitizationErrors,
   queryValidationErrors,
   validationErrors,
   validObjectWithManyProperties,
@@ -102,6 +104,11 @@ describe('POST /metadata', () => {
       });
     expect(response.body.internalCode).toEqual('subjectExistsError');
   });
+
+  test('should be removed all unsafe characters in keys of request body object', async () => {
+    const response = await request(connectionString).post('/metadata').send({ '$ubject$..': '' });
+    expect(response.body).toStrictEqual(invalidObjectSanitizationErrors);
+  });
 });
 
 describe('GET /metadata/:subject', () => {
@@ -114,7 +121,15 @@ describe('GET /metadata/:subject', () => {
     const response = await request(connectionString).get('/metadata/unexisting');
     expect(response.body).toStrictEqual({
       internalCode: 'subjectNotFoundError',
-      message: 'A metadata object with that subject does not exists',
+      message: "A metadata object with subject 'unexisting' does not exists",
+    });
+  });
+
+  test('should be removed all unsafe characters from request parameters', async () => {
+    const response = await request(connectionString).get('/metadata/$invali.d');
+    expect(response.body).toStrictEqual({
+      internalCode: 'subjectNotFoundError',
+      message: "A metadata object with subject '_invali_d' does not exists",
     });
   });
 });
@@ -146,7 +161,15 @@ describe('GET /metadata/:subject/properties', () => {
     const response = await request(connectionString).get('/metadata/unexisting/properties');
     expect(response.body).toStrictEqual({
       internalCode: 'subjectNotFoundError',
-      message: 'A metadata object with that subject does not exists',
+      message: "A metadata object with subject 'unexisting' does not exists",
+    });
+  });
+
+  test('should be removed all unsafe characters from request parameters', async () => {
+    const response = await request(connectionString).get('/metadata/$invali.d/properties');
+    expect(response.body).toStrictEqual({
+      internalCode: 'subjectNotFoundError',
+      message: "A metadata object with subject '_invali_d' does not exists",
     });
   });
 });
@@ -260,7 +283,15 @@ describe('GET /metadata/:subject/property/:propertyName', () => {
     const response = await request(connectionString).get('/metadata/unexisting/property/subject');
     expect(response.body).toStrictEqual({
       internalCode: 'subjectNotFoundError',
-      message: 'A metadata object with that subject does not exists',
+      message: "A metadata object with subject 'unexisting' does not exists",
+    });
+  });
+
+  test('should be removed all unsafe characters from subject parameter', async () => {
+    const response = await request(connectionString).get('/metadata/$inv.ali.d/property/subject');
+    expect(response.body).toStrictEqual({
+      internalCode: 'subjectNotFoundError',
+      message: "A metadata object with subject '_inv_ali_d' does not exists",
     });
   });
 
@@ -269,6 +300,14 @@ describe('GET /metadata/:subject/property/:propertyName', () => {
     expect(response.body).toStrictEqual({
       internalCode: 'propertyNotFoundError',
       message: "Property 'unexisting' does not exists",
+    });
+  });
+
+  test('should be removed all unsafe characters from propertyName parameter', async () => {
+    const response = await request(connectionString).get('/metadata/valid1/property/.unexi$ting.');
+    expect(response.body).toStrictEqual({
+      internalCode: 'propertyNotFoundError',
+      message: "Property '_unexi_ting_' does not exists",
     });
   });
 });
@@ -339,5 +378,15 @@ describe('POST /metadata/query', () => {
         properties: ['unexisting', 'other'],
       });
     expect(response.body).toStrictEqual([{}, {}]);
+  });
+
+  test('should be removed all unsafe characters in keys of request body object', async () => {
+    const response = await request(connectionString)
+      .post('/metadata/query')
+      .send({
+        '$ubject$..': ['valid', 'valid1'],
+        'prop.erti.es': ['subject'],
+      });
+    expect(response.body).toStrictEqual(querySanitizationErrors);
   });
 });

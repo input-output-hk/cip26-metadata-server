@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser';
 import timeout from 'connect-timeout';
 import express, { Express } from 'express';
+import mongoSanitize from 'express-mongo-sanitize';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 
@@ -22,6 +23,16 @@ const buildServer = (
   server.use(bodyParser.json());
   server.use(bodyParser.urlencoded({ extended: true }));
   server.use(timeout('30s'));
+  server.use(
+    mongoSanitize({
+      replaceWith: '_',
+      onSanitize: ({ req, key }) => {
+        logger.log.warn(
+          `Incomming request to ${req.path} contains invalid characters in request.${key}. Those characters were replaced by '_'`
+        );
+      },
+    })
+  );
 
   server.use((request, response, next) => {
     logger.log.info(`New request: ${request.method} ${request.path}`);

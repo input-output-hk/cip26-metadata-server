@@ -39,7 +39,9 @@ describe('Metadata middlewares', () => {
         next
       );
       expect(next).toHaveBeenCalledWith(
-        ErrorFactory.subjectNotFoundError('A metadata object with that subject does not exists')
+        ErrorFactory.subjectNotFoundError(
+          "A metadata object with subject 'unexisting' does not exists"
+        )
       );
     });
 
