@@ -413,7 +413,7 @@ describe('PUT /metadata/:subject', () => {
       .send(unexistentUpdateObject);
     expect(response.body).toStrictEqual({
       internalCode: 'subjectNotFoundError',
-      message: 'A metadata object with that subject does not exists',
+      message: "A metadata object with subject 'unexistent' does not exists",
     });
   });
 
