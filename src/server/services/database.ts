@@ -68,14 +68,16 @@ const configure = (logger: Logger, database: Db): DatabaseService => ({
   updateObject: async (filters, updates) => {
     logger.log.info('[Services][updateObject] Inserting object on db');
     try {
-      await database.collection(DATABASE_COLLECTIONS.METADATA).updateOne(
-        filters,
-        {
-          $set: updates.creations,
-          $addToSet: updates.editions,
-        },
-        { upsert: true }
-      );
+      const query: { $set?: Record<string, unknown>; $addToSet?: Record<string, unknown> } = {};
+      if (Object.keys(updates.creations).length > 0) {
+        query.$set = updates.creations;
+      }
+      if (Object.keys(updates.editions).length > 0) {
+        query.$addToSet = updates.editions;
+      }
+      await database
+        .collection(DATABASE_COLLECTIONS.METADATA)
+        .updateOne(filters, query, { upsert: true });
       logger.log.info('[Services][insertObject] Object inserted on db');
       return true;
     } catch (error) {

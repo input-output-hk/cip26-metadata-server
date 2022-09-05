@@ -242,4 +242,260 @@ describe('Metadata handlers', () => {
       expect(services.databaseService.queryObjects).toHaveBeenCalledWith(['abc'], undefined);
     });
   });
+
+  describe('Method updateObject', () => {
+    test('Only updates. Check db service number of calls', async () => {
+      await metadataHandler.updateObject(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+              {
+                sequenceNumber: 3,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(services.databaseService.updateObject).toHaveBeenCalledTimes(1);
+    });
+
+    test('Only updates. Check db service call', async () => {
+      await metadataHandler.updateObject(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+              {
+                sequenceNumber: 3,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(services.databaseService.updateObject).toHaveBeenCalledWith(
+        { subject: 'abc' },
+        {
+          editions: {
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          },
+          creations: {},
+        }
+      );
+    });
+
+    test('Only insertions. Check db service number of calls', async () => {
+      await metadataHandler.updateObject(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+              {
+                sequenceNumber: 3,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            newEntry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(services.databaseService.updateObject).toHaveBeenCalledTimes(1);
+    });
+
+    test('Only insertions. Check db service call', async () => {
+      await metadataHandler.updateObject(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+              {
+                sequenceNumber: 3,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            newEntry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(services.databaseService.updateObject).toHaveBeenCalledWith(
+        { subject: 'abc' },
+        {
+          creations: {
+            newEntry: [
+              {
+                sequenceNumber: 4,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          editions: {},
+        }
+      );
+    });
+
+    test('Insertions and updates. Check db service number of calls', async () => {
+      await metadataHandler.updateObject(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+              {
+                sequenceNumber: 3,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            newEntry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(services.databaseService.updateObject).toHaveBeenCalledTimes(1);
+    });
+
+    test('Insertions and updates. Check db service call', async () => {
+      await metadataHandler.updateObject(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+              {
+                sequenceNumber: 3,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            newEntry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(services.databaseService.updateObject).toHaveBeenCalledWith(
+        { subject: 'abc' },
+        {
+          creations: {
+            newEntry: [
+              {
+                sequenceNumber: 4,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          editions: {
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          },
+        }
+      );
+    });
+  });
 });
