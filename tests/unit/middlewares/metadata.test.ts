@@ -3,7 +3,7 @@ import { ErrorFactory } from '../../../src/server/errors/error-factory';
 import { Logger } from '../../../src/server/logger/logger';
 import { buildMiddlewares } from '../../../src/server/middlewares';
 import { MetadataMiddleware } from '../../../src/server/middlewares/metadata';
-import { mockRequest, mockResponse } from '../mocks/express';
+import { mockCustomRequest, mockRequest, mockResponse } from '../mocks/express';
 import { objectFromDatabase } from '../utils/data';
 
 let metadataMiddleware: MetadataMiddleware;
@@ -12,6 +12,7 @@ const services = {
     getObject: jest.fn(),
     insertObject: jest.fn(),
     queryObjects: jest.fn(),
+    updateObject: jest.fn(),
   },
 };
 
@@ -121,6 +122,105 @@ describe('Metadata middlewares', () => {
         next
       );
       expect(next).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('Method checkSequenceNumbers', () => {
+    test('Should fail if a sequence number is higher from oldest + 1', async () => {
+      await metadataMiddleware.checkSequenceNumbers(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(next).toHaveBeenCalledWith(
+        ErrorFactory.subjectNotFoundError(
+          'Entry entry contains an invalid sequence number. It should be the one unit larger than the larger sequence number for the entry'
+        )
+      );
+    });
+
+    test('Should fail if a sequence number is lower from oldest + 1', async () => {
+      await metadataMiddleware.checkSequenceNumbers(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 4,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            entry: {
+              sequenceNumber: 1,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(next).toHaveBeenCalledWith(
+        ErrorFactory.subjectNotFoundError(
+          'Entry entry contains an invalid sequence number. It should be the one unit larger than the larger sequence number for the entry'
+        )
+      );
+    });
+
+    test('Should check sequence number correctly', async () => {
+      await metadataMiddleware.checkSequenceNumbers(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+              {
+                sequenceNumber: 3,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(next.mock.calls[0][0]).not.toBeDefined();
     });
   });
 });

@@ -2,13 +2,20 @@
 import request from 'supertest';
 
 import {
+  invalidEntryUpdateObject,
   invalidObject,
+  invalidSequenceNumberUpdateObject,
+  invalidSubjectUpdateObject,
   invalidObjectSanitizationErrors,
   querySanitizationErrors,
   queryValidationErrors,
+  unexistentUpdateObject,
+  updateEntryValidationErrors,
+  updateSubjectValidationErrors,
   validationErrors,
   validObjectWithManyProperties,
   validObjectWithOneEntry,
+  validUpdateObject,
 } from './utils/data';
 
 const connectionString: string = process.env.TEST_CONNECTION_STRING as string;
@@ -372,4 +379,48 @@ describe('POST /metadata/query', () => {
       });
     expect(response.body).toStrictEqual(querySanitizationErrors);
   });
+});
+
+describe('PUT /metadata/:subject', () => {
+  test('should not allow to update a metadata object with a well known property', async () => {
+    const response = await request(connectionString)
+      .put('/metadata/subject')
+      .send(invalidSubjectUpdateObject);
+    expect(response.body).toStrictEqual(updateSubjectValidationErrors);
+  });
+
+  test('should not allow to update a metadata object with an invalid entry', async () => {
+    const response = await request(connectionString)
+      .put('/metadata/subject')
+      .send(invalidEntryUpdateObject);
+    expect(response.body).toStrictEqual(updateEntryValidationErrors);
+  });
+
+  test('should not allow an invalid sequence number', async () => {
+    const response = await request(connectionString)
+      .put('/metadata/valid')
+      .send(invalidSequenceNumberUpdateObject);
+    expect(response.body).toStrictEqual({
+      internalCode: 'olderEntryError',
+      message:
+        'Entry entry_property1 contains an invalid sequence number. It should be the one unit larger than the larger sequence number for the entry',
+    });
+  });
+
+  test('Should throw error if subject not exist', async () => {
+    const response = await request(connectionString)
+      .put('/metadata/unexistent')
+      .send(unexistentUpdateObject);
+    expect(response.body).toStrictEqual({
+      internalCode: 'subjectNotFoundError',
+      message: 'A metadata object with that subject does not exists',
+    });
+  });
+
+  test('Should update correctly. Check status', async () => {
+    const response = await request(connectionString).put('/metadata/valid').send(validUpdateObject);
+    expect(response.status).toBe(204);
+  });
+
+  // TO DO: Add test to check modified object
 });

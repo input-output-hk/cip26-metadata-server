@@ -9,8 +9,9 @@ export const mockRequest = (
 
 export const mockCustomRequest = (
   object: Record<string, unknown> = {},
-  parameters: Record<string, unknown> = {}
-) => ({ params: parameters, metadataObject: object } as CustomRequest);
+  parameters: Record<string, unknown> = {},
+  body?: Record<string, unknown>
+) => ({ params: parameters, metadataObject: object, body } as CustomRequest);
 
 export const mockResponse = {
   send: jest.fn(),

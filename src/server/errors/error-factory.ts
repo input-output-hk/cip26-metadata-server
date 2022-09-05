@@ -48,6 +48,10 @@ const errors = {
     internalCode: 'subjectNotFoundError',
     statusCode: 404,
   },
+  OLDER_ENTRY_ERROR: {
+    internalCode: 'olderEntryError',
+    statusCode: 400,
+  },
   PROPERTY_NOT_FOUND_ERROR: {
     internalCode: 'propertyNotFoundError',
     statusCode: 404,
@@ -86,6 +90,9 @@ const propertyNotFoundError: BuildApiErrorFunction = (message) =>
 const invalidSignatures: BuildApiErrorFunction = (message) =>
   buildApiError(errors.INVALID_SIGNATURES, message);
 
+const olderEntryError: BuildApiErrorFunction = (message) =>
+  buildApiError(errors.OLDER_ENTRY_ERROR, message);
+
 export const ErrorFactory = {
   unmappedError,
   databaseConnectionError,
@@ -94,4 +101,5 @@ export const ErrorFactory = {
   subjectNotFoundError,
   propertyNotFoundError,
   invalidSignatures,
+  olderEntryError,
 };

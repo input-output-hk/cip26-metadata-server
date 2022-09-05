@@ -164,6 +164,98 @@ export const queryValidationErrors = [
   },
 ];
 
+export const invalidSubjectUpdateObject = {
+  subject: 'sub',
+  entry_property1: {
+    value: 'vavue 1',
+    sequenceNumber: 1,
+    signatures: [
+      {
+        signature:
+          '492fb358cf3e15bb65c08182a52918ee5b4185afe9ed43ce49a68ee0bc2becebe782d5acd348b636ad28a144c3aa07135f0dc38de2949b4d3e72f85d39020002',
+        publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
+      },
+    ],
+  },
+};
+
+export const invalidEntryUpdateObject = {
+  entry_property1: {
+    value: 'vavue 1',
+    sequenceNumber: 1,
+    signatures: [
+      {
+        signature: 'abc',
+        publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
+      },
+    ],
+  },
+};
+
+export const updateSubjectValidationErrors = [
+  {
+    instancePath: '/subject',
+    keyword: 'false schema',
+    message: 'boolean schema is false',
+    params: {},
+    schemaPath: '#/properties/subject/false schema',
+  },
+];
+
+export const updateEntryValidationErrors = [
+  {
+    instancePath: '/entry_property1/signatures/0/signature',
+    keyword: 'minLength',
+    message: 'must NOT have fewer than 128 characters',
+    params: {
+      limit: 128,
+    },
+    schemaPath: '#/definitions/signature/properties/signature/minLength',
+  },
+];
+
+export const invalidSequenceNumberUpdateObject = {
+  entry_property1: {
+    value: 'valid 1',
+    sequenceNumber: 1,
+    signatures: [
+      {
+        signature:
+          '25836958b24118416e056cedd9019729d8941d338858bdcd5dfd0ca76dda29ccf021286296544a6f88b335c09dcc10da660bd6e890db4f6e0bfa1b27794ba000',
+        publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
+      },
+    ],
+  },
+};
+
+export const validUpdateObject = {
+  entry_property1: {
+    value: 1,
+    sequenceNumber: 2,
+    signatures: [
+      {
+        signature:
+          'b0178ad804ad831808f02fba52b23906596c9d7695ff9f457c9b6df5f22f662249073ea9f794e32fcb704663aaacdc465169ea320b7a6b94d8652e797fac900e',
+        publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
+      },
+    ],
+  },
+};
+
+export const unexistentUpdateObject = {
+  entry_property1: {
+    value: 1,
+    sequenceNumber: 1,
+    signatures: [
+      {
+        publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
+        signature:
+          'c8510dc2d9bc8ddd264f545f8092fe3ca5608ba720ebad4a888295442ff4670bebd9b9ff183dc5aa16db4854d7609c0911061d18bcf76c8e9f47915e1b225408',
+      },
+    ],
+  },
+};
+
 export const querySanitizationErrors = [
   {
     instancePath: '',

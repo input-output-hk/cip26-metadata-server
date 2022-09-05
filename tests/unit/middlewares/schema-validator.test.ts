@@ -11,6 +11,7 @@ beforeAll(async () => {
       getObject: jest.fn(),
       insertObject: jest.fn(),
       queryObjects: jest.fn(),
+      updateObject: jest.fn(),
     },
   };
   const middlewares: Middlewares = buildMiddlewares(logger, services);
@@ -976,6 +977,167 @@ describe('Schema validator middlewares', () => {
           message: 'must NOT have additional properties',
         },
       ]);
+    });
+  });
+
+  describe('Method validateUpdateSchema', () => {
+    describe('Filter well-known properties', () => {
+      test('Should throw error if subject is present', () => {
+        schemaValidator.validateUpdateSchema(mockRequest({ subject: 'test' }), mockResponse, next);
+        expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
+          {
+            instancePath: '/subject',
+            keyword: 'false schema',
+            message: 'boolean schema is false',
+            params: {},
+            schemaPath: '#/properties/subject/false schema',
+          },
+        ]);
+      });
+
+      test('Should throw error if policy is present', () => {
+        schemaValidator.validateUpdateSchema(mockRequest({ policy: 'test' }), mockResponse, next);
+        expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
+          {
+            instancePath: '/policy',
+            keyword: 'false schema',
+            message: 'boolean schema is false',
+            params: {},
+            schemaPath: '#/properties/policy/false schema',
+          },
+        ]);
+      });
+
+      test('Should throw error if preimage is present', () => {
+        schemaValidator.validateUpdateSchema(mockRequest({ preimage: 'test' }), mockResponse, next);
+        expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
+          {
+            instancePath: '/preimage',
+            keyword: 'false schema',
+            message: 'boolean schema is false',
+            params: {},
+            schemaPath: '#/properties/preimage/false schema',
+          },
+        ]);
+      });
+
+      test('Should throw error if name is present', () => {
+        schemaValidator.validateUpdateSchema(mockRequest({ name: 'test' }), mockResponse, next);
+        expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
+          {
+            instancePath: '/name',
+            keyword: 'false schema',
+            message: 'boolean schema is false',
+            params: {},
+            schemaPath: '#/properties/name/false schema',
+          },
+        ]);
+      });
+
+      test('Should throw error if description is present', () => {
+        schemaValidator.validateUpdateSchema(
+          mockRequest({ description: 'test' }),
+          mockResponse,
+          next
+        );
+        expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
+          {
+            instancePath: '/description',
+            keyword: 'false schema',
+            message: 'boolean schema is false',
+            params: {},
+            schemaPath: '#/properties/description/false schema',
+          },
+        ]);
+      });
+
+      test('Should throw error if ticker is present', () => {
+        schemaValidator.validateUpdateSchema(mockRequest({ ticker: 'test' }), mockResponse, next);
+        expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
+          {
+            instancePath: '/ticker',
+            keyword: 'false schema',
+            message: 'boolean schema is false',
+            params: {},
+            schemaPath: '#/properties/ticker/false schema',
+          },
+        ]);
+      });
+
+      test('Should throw error if decimals is present', () => {
+        schemaValidator.validateUpdateSchema(mockRequest({ decimals: 'test' }), mockResponse, next);
+        expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
+          {
+            instancePath: '/decimals',
+            keyword: 'false schema',
+            message: 'boolean schema is false',
+            params: {},
+            schemaPath: '#/properties/decimals/false schema',
+          },
+        ]);
+      });
+
+      test('Should throw error if url is present', () => {
+        schemaValidator.validateUpdateSchema(mockRequest({ url: 'test' }), mockResponse, next);
+        expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
+          {
+            instancePath: '/url',
+            keyword: 'false schema',
+            message: 'boolean schema is false',
+            params: {},
+            schemaPath: '#/properties/url/false schema',
+          },
+        ]);
+      });
+
+      test('Should throw error if logo is present', () => {
+        schemaValidator.validateUpdateSchema(mockRequest({ logo: 'test' }), mockResponse, next);
+        expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
+          {
+            instancePath: '/logo',
+            keyword: 'false schema',
+            message: 'boolean schema is false',
+            params: {},
+            schemaPath: '#/properties/logo/false schema',
+          },
+        ]);
+      });
+    });
+
+    test('Should throw error if invalid entry is present', () => {
+      schemaValidator.validateUpdateSchema(mockRequest({ entry: 'test' }), mockResponse, next);
+      expect(next.mock.calls[0][0].validationErrors).toStrictEqual([
+        {
+          instancePath: '/entry',
+          keyword: 'type',
+          message: 'must be object',
+          params: {
+            type: 'object',
+          },
+          schemaPath: '#/type',
+        },
+      ]);
+    });
+
+    test('Should call next on valid entry', () => {
+      schemaValidator.validateUpdateSchema(
+        mockRequest({
+          entry: {
+            value: 1,
+            sequenceNumber: 1,
+            signatures: [
+              {
+                signature:
+                  '12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678',
+                publicKey: '1234567890123456789012345678901234567890123456789012345678901234',
+              },
+            ],
+          },
+        }),
+        mockResponse,
+        next
+      );
+      expect(next.mock.calls[0][0]).not.toBeDefined();
     });
   });
 });
