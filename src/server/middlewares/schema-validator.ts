@@ -68,6 +68,21 @@ const getValidateFunction = () => {
 
 const getValidateUpdateFunction = () => {
   const ajv = new Ajv({ strict: false, allErrors: true });
+  ajv.removeKeyword('contentEncoding');
+  ajv.addKeyword({
+    keyword: 'contentEncoding',
+    compile: (schema) => {
+      switch (schema) {
+        case 'base64':
+          return validateBase64;
+        case 'base16':
+          return validateBase16;
+        default:
+          return () => true;
+      }
+    },
+    errors: true,
+  });
   return ajv.compile(updateSchema);
 };
 
