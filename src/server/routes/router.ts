@@ -38,6 +38,16 @@ const buildRoutes = (
     schemaValidatorMiddleware.validateBatchQueryRequestBody,
     metadataHandler.queryObjects
   );
+  server.put(
+    '/metadata/:subject',
+    [
+      schemaValidatorMiddleware.validateUpdateSchema,
+      signaturesMiddleware.validateSignatures,
+      metadataMiddleware.checkSubjectExists,
+      metadataMiddleware.checkSequenceNumbers,
+    ],
+    metadataHandler.updateObject
+  );
 };
 
 export default buildRoutes;

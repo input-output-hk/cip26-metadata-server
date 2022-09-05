@@ -1,9 +1,7 @@
 {
   "title": "Cardano Off-Chain Metadata",
   "$schema": "http://json-schema.org/draft-07/schema",
-  "required": [
-    "subject"
-  ],
+  "required": ["subject"],
   "additionalProperties": {
     "$ref": "#/definitions/entry"
   },
@@ -24,23 +22,12 @@
     "preimage": {
       "type": "object",
       "description": "A hashing algorithm identifier and a base16-enocoded bytestring, such that the bytestring is the preimage of the metadata subject under that hash function.",
-      "required": [
-        "alg",
-        "msg"
-      ],
+      "required": ["alg", "msg"],
       "properties": {
         "alg": {
           "type": "string",
           "description": "A hashing algorithm identifier. The length of the digest is given by the subject.",
-          "enum": [
-            "sha1",
-            "sha",
-            "sha3",
-            "blake2b",
-            "blake2s",
-            "keccak",
-            "md5"
-          ]
+          "enum": ["sha1", "sha", "sha3", "blake2b", "blake2s", "keccak", "md5"]
         },
         "msg": {
           "type": "string",
@@ -89,11 +76,7 @@
     "entry": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "value",
-        "sequenceNumber",
-        "signatures"
-      ],
+      "required": ["value", "sequenceNumber", "signatures"],
       "properties": {
         "value": {},
         "sequenceNumber": {
@@ -118,10 +101,7 @@
     "signature": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "publicKey",
-        "signature"
-      ],
+      "required": ["publicKey", "signature"],
       "properties": {
         "publicKey": {
           "type": "string",

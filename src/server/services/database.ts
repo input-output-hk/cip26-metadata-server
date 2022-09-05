@@ -8,6 +8,13 @@ export interface DatabaseService {
   getObject(filters: Record<string, unknown>): Promise<Document | null>;
   insertObject(object: Record<string, unknown>): Promise<string>;
   queryObjects(subjects: string[], properties: string[]): Promise<Document[] | null>;
+  updateObject(
+    filters: Record<string, unknown>,
+    updates: {
+      creations: Record<string, unknown>;
+      editions: Record<string, unknown>;
+    }
+  ): Promise<boolean>;
 }
 
 const configure = (logger: Logger, database: Db): DatabaseService => ({
@@ -55,6 +62,27 @@ const configure = (logger: Logger, database: Db): DatabaseService => ({
         `[Services][queryObjects] Could not retrieve query results. Error: ${error}`
       );
       throw ErrorFactory.databaseError(`Could not retrieve query results. Error: ${error}`);
+    }
+  },
+
+  updateObject: async (filters, updates) => {
+    logger.log.info('[Services][updateObject] Updating object on db');
+    try {
+      const query: { $set?: Record<string, unknown>; $addToSet?: Record<string, unknown> } = {};
+      if (Object.keys(updates.creations).length > 0) {
+        query.$set = updates.creations;
+      }
+      if (Object.keys(updates.editions).length > 0) {
+        query.$addToSet = updates.editions;
+      }
+      await database
+        .collection(DATABASE_COLLECTIONS.METADATA)
+        .updateOne(filters, query, { upsert: true });
+      logger.log.info('[Services][updateObject] Object updated on db');
+      return true;
+    } catch (error) {
+      logger.log.error(`[Services][updateObject] Could not update object. Error: ${error}`);
+      throw ErrorFactory.databaseError(`Could not update object. Error: ${error}`);
     }
   },
 });

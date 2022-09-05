@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { Metadata } from '../../types/metadata';
+import { Entry, Metadata } from '../../types/metadata';
 import { ErrorFactory } from '../errors/error-factory';
 import { Logger } from '../logger/logger';
 import metadataMappers from '../mappers/metadata';
@@ -23,6 +23,11 @@ export interface MetadataHandler {
     response: Response,
     next: NextFunction
   ): Promise<Response<string[]> | void>;
+  updateObject(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<{ statusCode: number } | void>;
   getProperty(
     request: Request,
     response: Response,
@@ -132,6 +137,37 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
       return response.status(200).send(mappedObjects);
     } catch (error) {
       logger.log.error('[Handler][queryObjects] Error querying metadata objects');
+      return next(error);
+    }
+  },
+
+  updateObject: async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<{ statusCode: number } | void> => {
+    try {
+      logger.log.info('[Handlers][updateObject] Updating metadata object');
+      const subject: string = request.params.subject;
+      const { metadataObject } = request as CustomRequest;
+      const metadataObjectProperties = Object.keys(metadataObject);
+      const updates: {
+        creations: Record<string, Entry[]>;
+        editions: Record<string, Entry>;
+      } = { creations: {}, editions: {} };
+      for (const [key, value] of Object.entries(request.body)) {
+        if (!metadataObjectProperties.includes(key)) {
+          updates.creations[key] = [value as Entry];
+        } else {
+          updates.editions[key] = value as Entry;
+        }
+      }
+
+      await services.databaseService.updateObject({ subject }, updates);
+      logger.log.info('[Handlers][updateObject] Metada object updated');
+      return response.sendStatus(204);
+    } catch (error) {
+      logger.log.error('[Handler][createObject] Error updating metadata object');
       return next(error);
     }
   },

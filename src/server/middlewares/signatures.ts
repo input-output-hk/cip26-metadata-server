@@ -58,7 +58,7 @@ const configure = (logger: Logger): SignaturesMiddleware => ({
       if (!WELL_KNOWN_PROPERTIES.includes(key)) {
         logger.log.error(`Entry ${key} does not contain a valid signature`);
         const validSignature = validateSignaturesForEntry(
-          request.body.subject,
+          request.body.subject || request.params.subject,
           value as Entry,
           key
         );

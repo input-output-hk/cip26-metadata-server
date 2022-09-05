@@ -18,6 +18,7 @@ const services = {
     getObject: jest.fn(),
     insertObject: jest.fn(),
     queryObjects: jest.fn(),
+    updateObject: jest.fn(),
   },
 };
 
@@ -239,6 +240,262 @@ describe('Metadata handlers', () => {
     test('should allow to call db.queryObjects() with only an array of subjects as parameters and an undefined value for properties', async () => {
       await metadataHandler.queryObjects(mockRequest({ subjects: ['abc'] }), mockResponse, next);
       expect(services.databaseService.queryObjects).toHaveBeenCalledWith(['abc'], undefined);
+    });
+  });
+
+  describe('Method updateObject', () => {
+    test('Only updates. Check db service number of calls', async () => {
+      await metadataHandler.updateObject(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+              {
+                sequenceNumber: 3,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(services.databaseService.updateObject).toHaveBeenCalledTimes(1);
+    });
+
+    test('Only updates. Check db service call', async () => {
+      await metadataHandler.updateObject(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+              {
+                sequenceNumber: 3,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(services.databaseService.updateObject).toHaveBeenCalledWith(
+        { subject: 'abc' },
+        {
+          editions: {
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          },
+          creations: {},
+        }
+      );
+    });
+
+    test('Only insertions. Check db service number of calls', async () => {
+      await metadataHandler.updateObject(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+              {
+                sequenceNumber: 3,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            newEntry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(services.databaseService.updateObject).toHaveBeenCalledTimes(1);
+    });
+
+    test('Only insertions. Check db service call', async () => {
+      await metadataHandler.updateObject(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+              {
+                sequenceNumber: 3,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            newEntry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(services.databaseService.updateObject).toHaveBeenCalledWith(
+        { subject: 'abc' },
+        {
+          creations: {
+            newEntry: [
+              {
+                sequenceNumber: 4,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          editions: {},
+        }
+      );
+    });
+
+    test('Insertions and updates. Check db service number of calls', async () => {
+      await metadataHandler.updateObject(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+              {
+                sequenceNumber: 3,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            newEntry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(services.databaseService.updateObject).toHaveBeenCalledTimes(1);
+    });
+
+    test('Insertions and updates. Check db service call', async () => {
+      await metadataHandler.updateObject(
+        mockCustomRequest(
+          {
+            subject: 'abc',
+            entry: [
+              {
+                sequenceNumber: 2,
+                value: 1,
+                signatures: [],
+              },
+              {
+                sequenceNumber: 3,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          { subject: 'abc' },
+          {
+            newEntry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          }
+        ),
+        mockResponse,
+        next
+      );
+      expect(services.databaseService.updateObject).toHaveBeenCalledWith(
+        { subject: 'abc' },
+        {
+          creations: {
+            newEntry: [
+              {
+                sequenceNumber: 4,
+                value: 1,
+                signatures: [],
+              },
+            ],
+          },
+          editions: {
+            entry: {
+              sequenceNumber: 4,
+              value: 1,
+              signatures: [],
+            },
+          },
+        }
+      );
     });
   });
 });
