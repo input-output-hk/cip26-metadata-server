@@ -68,22 +68,6 @@ const getValidateFunction = () => {
 
 const getValidateUpdateFunction = () => {
   const ajv = new Ajv({ strict: false, allErrors: true });
-  addFormats(ajv);
-  ajv.removeKeyword('contentEncoding');
-  ajv.addKeyword({
-    keyword: 'contentEncoding',
-    compile: (schema) => {
-      switch (schema) {
-        case 'base64':
-          return validateBase64;
-        case 'base16':
-          return validateBase16;
-        default:
-          return () => true;
-      }
-    },
-    errors: true,
-  });
   return ajv.compile(updateSchema);
 };
 
@@ -129,7 +113,9 @@ const configure = (logger: Logger): SchemaValidatorMiddleware => {
         logger.log.info('[Middlewares][validateUpdateSchema] Successful update schema validation');
         return next();
       } else {
-        logger.log.error('[Middlewares][validateSchema] Errors found in update schema validation');
+        logger.log.error(
+          '[Middlewares][validateUpdateSchema] Errors found in update schema validation'
+        );
         return next(new ValidationError(validateUpdate.errors));
       }
     },

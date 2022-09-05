@@ -91,7 +91,7 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
         );
       }
 
-      logger.log.info(`[Middlewares][checkSubjectNotExists] Sequence number checked correctly`);
+      logger.log.info(`[Middlewares][checkSequenceNumbers] Sequence number checked correctly`);
       return next();
     },
   };
