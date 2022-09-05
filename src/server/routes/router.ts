@@ -5,13 +5,17 @@ import { Middlewares } from '../middlewares';
 
 const buildRoutes = (
   { statusHandler, metadataHandler }: Handlers,
-  { schemaValidatorMiddleware, metadataMiddleware }: Middlewares,
+  { schemaValidatorMiddleware, signaturesMiddleware, metadataMiddleware }: Middlewares,
   server: Express
 ) => {
   server.get('/health', statusHandler.getStatus);
   server.post(
     '/metadata',
-    [schemaValidatorMiddleware.validateSchema, metadataMiddleware.checkSubjectNotExists],
+    [
+      schemaValidatorMiddleware.validateSchema,
+      signaturesMiddleware.validateSignatures,
+      metadataMiddleware.checkSubjectNotExists,
+    ],
     metadataHandler.createObject
   );
   server.get(
@@ -24,10 +28,21 @@ const buildRoutes = (
     metadataMiddleware.checkSubjectExists,
     metadataHandler.getPropertyNames
   );
+  server.get(
+    '/metadata/:subject/property/:propertyName',
+    metadataMiddleware.checkSubjectExists,
+    metadataHandler.getProperty
+  );
+  server.post(
+    '/metadata/query',
+    schemaValidatorMiddleware.validateBatchQueryRequestBody,
+    metadataHandler.queryObjects
+  );
   server.put(
     '/metadata/:subject',
     [
       schemaValidatorMiddleware.validateUpdateSchema,
+      signaturesMiddleware.validateSignatures,
       metadataMiddleware.checkSubjectExists,
       metadataMiddleware.checkSequenceNumbers,
     ],

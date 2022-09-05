@@ -52,10 +52,10 @@ export interface Metadata {
 export interface Entry {
   value: unknown;
   sequenceNumber: number;
-  signatures: Signatures;
+  signatures: Signature[];
 }
 
-export interface Signatures {
+export interface Signature {
   /**
    * An Ed25519 Public key, verifying the companion signature.
    */

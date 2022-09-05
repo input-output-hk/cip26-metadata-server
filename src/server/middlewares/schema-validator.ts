@@ -4,12 +4,14 @@ import addFormats from 'ajv-formats';
 import { NextFunction, Request, Response } from 'express';
 
 import { ValidationError } from '../errors/error-factory';
+import queryRequestBodySchema from '../helpers/schemas/query-request-body.json';
 import schema from '../helpers/schemas/schema.json';
 import updateSchema from '../helpers/schemas/update-schema.json';
 import { Logger } from '../logger/logger';
 
 export interface SchemaValidatorMiddleware {
   validateSchema(request: Request, response: Response, next: NextFunction);
+  validateBatchQueryRequestBody(request: Request, response: Response, next: NextFunction);
   validateUpdateSchema(request: Request, response: Response, next: NextFunction);
 }
 
@@ -85,8 +87,14 @@ const getValidateUpdateFunction = () => {
   return ajv.compile(updateSchema);
 };
 
+const getValidateQueryFunction = () => {
+  const ajv = new Ajv({ strict: false, allErrors: true });
+  return ajv.compile(queryRequestBodySchema);
+};
+
 const configure = (logger: Logger): SchemaValidatorMiddleware => {
   const validate = getValidateFunction();
+  const validateQuery = getValidateQueryFunction();
   const validateUpdate = getValidateUpdateFunction();
   return {
     validateSchema: (request: Request, response: Response, next: NextFunction) => {
@@ -97,6 +105,21 @@ const configure = (logger: Logger): SchemaValidatorMiddleware => {
       } else {
         logger.log.error('[Middlewares][validateSchema] Errors found in json schema validation');
         return next(new ValidationError(validate.errors));
+      }
+    },
+
+    validateBatchQueryRequestBody: (request: Request, response: Response, next: NextFunction) => {
+      logger.log.info('[Middlewares][validateBatchQueryRequestBody] Validating query request body');
+      if (validateQuery(request.body)) {
+        logger.log.info(
+          '[Middlewares][validateBatchQueryRequestBody] Successful query request body validation'
+        );
+        return next();
+      } else {
+        logger.log.error(
+          '[Middlewares][validateBatchQueryRequestBody] Errors found in query request body validation'
+        );
+        return next(new ValidationError(validateQuery.errors));
       }
     },
 

@@ -73,6 +73,58 @@ paths:
                 $ref: '#/components/schemas/MetadataObjectPropertyNames'
         '404':
           description: Metadata object not found
+  /metadata/{subject}/property/{propertyName}:
+    get:
+      summary: Get the property value of the given property name for the metadata object associated with the provided subject
+      operationId: metadata-get-property
+      parameters:
+        - in: path
+          name: subject
+          schema:
+            type: string
+          required: true
+          description: Subject of the metadata object to get the property from
+        - in: path
+          name: propertyName
+          schema:
+            type: string
+          required: true
+          description: Name of the property to get value from
+      responses:
+        '200':
+          description: Property value retrieved
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/MetadataObjectPropertySubject'
+                  - $ref: '#/components/schemas/MetadataObjectPropertyPolicy'
+                  - $ref: '#/components/schemas/MetadataObjectPropertyPreimage'
+                  - $ref: '#/components/schemas/MetadataObjectPropertyName'
+                  - $ref: '#/components/schemas/MetadataObjectPropertyDescription'
+                  - $ref: '#/components/schemas/MetadataObjectPropertyTicker'
+                  - $ref: '#/components/schemas/MetadataObjectPropertyDecimals'
+                  - $ref: '#/components/schemas/MetadataObjectPropertyUrl'
+                  - $ref: '#/components/schemas/MetadataObjectPropertyLogo'
+                  - $ref: '#/components/schemas/MetadataObjectPropertyEntry'
+        '404':
+          description: Metadata object or property not found
+  /metadata/query:
+    post:
+      summary: Get a list of metadata objects according to the rules defined in the request body
+      description: "If only 'subjects' is supplied, this query will return a list of subjects with all their properties.\n\n If 'subjects' and 'properties' are supplied, the query will return a list of subjects, with their properties narrowed down to only those specified by 'properties'."
+      operationId: metadata-query
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetadataQuery'
+        required: true
+      responses:
+        '200':
+          description: Query results retrieved
+        '500':
+          description: Server unavailable
 components:
   schemas:
     Healthcheck:
@@ -120,14 +172,14 @@ components:
           maxLength: 120
         preimage:
           type: object
-          requiredProperties: ['alg', 'msg']
+          required: ['alg', 'msg']
           properties:
             alg:
               type: string
               enum: ['sha1', 'sha', 'sha3', 'blake2b', 'blake2s', 'keccak', 'md5']
             msg:
               type: string
-              encoding: base16
+              contentEncoding: base16
         name:
           type: string
           maxLength: 50
@@ -155,6 +207,136 @@ components:
       type: array
       items:
         type: string
+    MetadataObjectPropertySubject:
+      type: object
+      additionalProperties: false
+      required: ['subject']
+      properties:
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 255
+    MetadataObjectPropertyPolicy:
+      type: object
+      additionalProperties: false
+      required: ['policy']
+      properties:
+        policy:
+          type: string
+          format: base16
+          minLength: 56
+          maxLength: 120
+    MetadataObjectPropertyPreimage:
+      type: object
+      additionalProperties: false
+      required: ['preimage']
+      properties:
+        preimage:
+          type: object
+          required: ['alg', 'msg']
+          properties:
+            alg:
+              type: string
+              enum: ['sha1', 'sha', 'sha3', 'blake2b', 'blake2s', 'keccak', 'md5']
+            msg:
+              type: string
+              contentEncoding: base16
+    MetadataObjectPropertyName:
+      type: object
+      additionalProperties: false
+      required: ['name']
+      properties:
+        name:
+          type: string
+          maxLength: 50
+          minLength: 1
+    MetadataObjectPropertyDescription:
+      type: object
+      additionalProperties: false
+      required: ['description']
+      properties:
+        description:
+          type: string
+          maxLength: 500
+    MetadataObjectPropertyTicker:
+      type: object
+      additionalProperties: false
+      required: ['ticker']
+      properties:
+        ticker:
+          type: string
+          maxLength: 9
+          minLength: 2
+    MetadataObjectPropertyDecimals:
+      type: object
+      additionalProperties: false
+      required: ['decimals']
+      properties:
+        decimals:
+          type: integer
+          minimum: 1
+          maximum: 19
+    MetadataObjectPropertyUrl:
+      type: object
+      additionalProperties: false
+      required: ['url']
+      properties:
+        url:
+          type: string
+          format: uri
+          maxLength: 250
+    MetadataObjectPropertyLogo:
+      type: object
+      additionalProperties: false
+      required: ['logo']
+      properties:
+        logo:
+          type: string
+          format: base64
+          maxLength: 87400
+    MetadataObjectPropertyEntry:
+      type: object
+      additionalProperties:
+        type: object
+        required: ['value', 'sequenceNumber', 'signatures']
+        properties:
+          value:
+            type: object
+          sequenceNumber:
+            type: number
+          signatures:
+            type: array
+            items:
+              type: object
+              required: ['publicKey', 'signature']
+              properties:
+                publicKey:
+                  type: string
+                  format: base16
+                  minLength: 64
+                  maxLength: 64
+                signature:
+                  type: string
+                  format: base16
+                  minLength: 128
+                  maxLength: 128
+    MetadataQuery:
+      type: object
+      additionalProperties: false
+      required: ['subjects']
+      properties:
+        subjects:
+          summary: A list of subjects, encoded as strings
+          type: array
+          minItems: 1
+          items:
+            type: string
+        properties:
+          summary: An optional list of property names, encoded as strings
+          type: array
+          minItems: 1
+          items:
+            type: string
     MetadataCreationBody:
       type: object
       required: ['subject']
@@ -194,14 +376,14 @@ components:
           maxLength: 120
         preimage:
           type: object
-          requiredProperties: ['alg', 'msg']
+          required: ['alg', 'msg']
           properties:
             alg:
               type: string
               enum: ['sha1', 'sha', 'sha3', 'blake2b', 'blake2s', 'keccak', 'md5']
             msg:
               type: string
-              encoding: base16
+              contentEncoding: base16
         name:
           type: string
           maxLength: 50

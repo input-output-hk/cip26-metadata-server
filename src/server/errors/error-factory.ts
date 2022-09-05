@@ -52,6 +52,14 @@ const errors = {
     internalCode: 'olderEntryError',
     statusCode: 400,
   },
+  PROPERTY_NOT_FOUND_ERROR: {
+    internalCode: 'propertyNotFoundError',
+    statusCode: 404,
+  },
+  INVALID_SIGNATURES: {
+    internalCode: 'invalidSignatures',
+    statusCode: 400,
+  },
 };
 
 const buildApiError = (
@@ -76,6 +84,12 @@ const subjectExistsError: BuildApiErrorFunction = (message) =>
 const subjectNotFoundError: BuildApiErrorFunction = (message) =>
   buildApiError(errors.SUBJECT_NOT_FOUND_ERROR, message);
 
+const propertyNotFoundError: BuildApiErrorFunction = (message) =>
+  buildApiError(errors.PROPERTY_NOT_FOUND_ERROR, message);
+
+const invalidSignatures: BuildApiErrorFunction = (message) =>
+  buildApiError(errors.INVALID_SIGNATURES, message);
+
 const olderEntryError: BuildApiErrorFunction = (message) =>
   buildApiError(errors.OLDER_ENTRY_ERROR, message);
 
@@ -85,5 +99,7 @@ export const ErrorFactory = {
   databaseError,
   subjectExistsError,
   subjectNotFoundError,
+  propertyNotFoundError,
+  invalidSignatures,
   olderEntryError,
 };
