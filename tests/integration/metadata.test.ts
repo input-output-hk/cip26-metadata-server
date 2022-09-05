@@ -4,9 +4,9 @@ import request from 'supertest';
 import {
   invalidEntryUpdateObject,
   invalidObject,
+  invalidObjectSanitizationErrors,
   invalidSequenceNumberUpdateObject,
   invalidSubjectUpdateObject,
-  invalidObjectSanitizationErrors,
   querySanitizationErrors,
   queryValidationErrors,
   unexistentUpdateObject,
