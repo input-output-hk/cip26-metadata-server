@@ -106,7 +106,22 @@ describe('POST /metadata', () => {
   });
 
   test('should be removed all unsafe characters in keys of request body object', async () => {
-    const response = await request(connectionString).post('/metadata').send({ '$ubject$..': '' });
+    const response = await request(connectionString)
+      .post('/metadata')
+      .send({
+        '$ubject$..': '',
+        entry1: {
+          value: { $gt: '', a: 1 },
+          sequenceNumber: 1,
+          signatures: [
+            {
+              signature:
+                'f8e4b084c40c92904f162e703335e48c203f4f042217f6b3b2bb529424f89da313cb93af4e29857df563fcac35c406527e7e2588cdc9a0baf34a00635e294201',
+              publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
+            },
+          ],
+        },
+      });
     expect(response.body).toStrictEqual(invalidObjectSanitizationErrors);
   });
 });
@@ -122,14 +137,6 @@ describe('GET /metadata/:subject', () => {
     expect(response.body).toStrictEqual({
       internalCode: 'subjectNotFoundError',
       message: "A metadata object with subject 'unexisting' does not exists",
-    });
-  });
-
-  test('should be removed all unsafe characters from request parameters', async () => {
-    const response = await request(connectionString).get('/metadata/$invali.d');
-    expect(response.body).toStrictEqual({
-      internalCode: 'subjectNotFoundError',
-      message: "A metadata object with subject '_invali_d' does not exists",
     });
   });
 });
@@ -162,14 +169,6 @@ describe('GET /metadata/:subject/properties', () => {
     expect(response.body).toStrictEqual({
       internalCode: 'subjectNotFoundError',
       message: "A metadata object with subject 'unexisting' does not exists",
-    });
-  });
-
-  test('should be removed all unsafe characters from request parameters', async () => {
-    const response = await request(connectionString).get('/metadata/$invali.d/properties');
-    expect(response.body).toStrictEqual({
-      internalCode: 'subjectNotFoundError',
-      message: "A metadata object with subject '_invali_d' does not exists",
     });
   });
 });
@@ -287,27 +286,11 @@ describe('GET /metadata/:subject/property/:propertyName', () => {
     });
   });
 
-  test('should be removed all unsafe characters from subject parameter', async () => {
-    const response = await request(connectionString).get('/metadata/$inv.ali.d/property/subject');
-    expect(response.body).toStrictEqual({
-      internalCode: 'subjectNotFoundError',
-      message: "A metadata object with subject '_inv_ali_d' does not exists",
-    });
-  });
-
   test("should not retrieve unexisting property 'unexisting' of an existing metadata object with subject: 'valid1'", async () => {
     const response = await request(connectionString).get('/metadata/valid1/property/unexisting');
     expect(response.body).toStrictEqual({
       internalCode: 'propertyNotFoundError',
       message: "Property 'unexisting' does not exists",
-    });
-  });
-
-  test('should be removed all unsafe characters from propertyName parameter', async () => {
-    const response = await request(connectionString).get('/metadata/valid1/property/.unexi$ting.');
-    expect(response.body).toStrictEqual({
-      internalCode: 'propertyNotFoundError',
-      message: "Property '_unexi_ting_' does not exists",
     });
   });
 });
