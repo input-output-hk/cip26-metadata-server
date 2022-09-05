@@ -357,7 +357,7 @@ describe('PUT /metadata/:subject', () => {
     expect(response.body).toStrictEqual(updateSubjectValidationErrors);
   });
 
-  test('should not allow to create a metadata object with an invalid entry', async () => {
+  test('should not allow to update a metadata object with an invalid entry', async () => {
     const response = await request(connectionString)
       .put('/metadata/subject')
       .send(invalidEntryUpdateObject);
@@ -371,7 +371,7 @@ describe('PUT /metadata/:subject', () => {
     expect(response.body).toStrictEqual({
       internalCode: 'olderEntryError',
       message:
-        'Entry entry_property1 contains an invalid sequence number. It should be the one unit larget than the larger sequence number for the entry',
+        'Entry entry_property1 contains an invalid sequence number. It should be the one unit larger than the larger sequence number for the entry',
     });
   });
 
