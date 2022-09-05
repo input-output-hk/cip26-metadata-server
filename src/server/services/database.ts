@@ -66,7 +66,7 @@ const configure = (logger: Logger, database: Db): DatabaseService => ({
   },
 
   updateObject: async (filters, updates) => {
-    logger.log.info('[Services][updateObject] Inserting object on db');
+    logger.log.info('[Services][updateObject] Updating object on db');
     try {
       const query: { $set?: Record<string, unknown>; $addToSet?: Record<string, unknown> } = {};
       if (Object.keys(updates.creations).length > 0) {
@@ -78,11 +78,11 @@ const configure = (logger: Logger, database: Db): DatabaseService => ({
       await database
         .collection(DATABASE_COLLECTIONS.METADATA)
         .updateOne(filters, query, { upsert: true });
-      logger.log.info('[Services][insertObject] Object inserted on db');
+      logger.log.info('[Services][updateObject] Object updated on db');
       return true;
     } catch (error) {
-      logger.log.error(`[Services][insertObject] Could not insert object. Error: ${error}`);
-      throw ErrorFactory.databaseError(`Could not insert object. Error: ${error}`);
+      logger.log.error(`[Services][updateObject] Could not update object. Error: ${error}`);
+      throw ErrorFactory.databaseError(`Could not update object. Error: ${error}`);
     }
   },
 });
