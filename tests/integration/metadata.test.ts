@@ -112,7 +112,7 @@ describe('POST /metadata', () => {
     expect(response.body.internalCode).toEqual('subjectExistsError');
   });
 
-  test('should be removed all unsafe characters in keys of request body object', async () => {
+  test('should remove all unsafe characters in keys of request body object', async () => {
     const response = await request(connectionString)
       .post('/metadata')
       .send({
@@ -370,7 +370,7 @@ describe('POST /metadata/query', () => {
     expect(response.body).toStrictEqual([{}, {}]);
   });
 
-  test('should be removed all unsafe characters in keys of request body object', async () => {
+  test('should remove all unsafe characters in keys of request body object', async () => {
     const response = await request(connectionString)
       .post('/metadata/query')
       .send({
@@ -403,7 +403,7 @@ describe('PUT /metadata/:subject', () => {
     expect(response.body).toStrictEqual({
       internalCode: 'olderEntryError',
       message:
-        'Entry entry_property1 contains an invalid sequence number. It should be the one unit larger than the larger sequence number for the entry',
+        'Entry entry_property1 contains an invalid sequence number. It should be one unit larger than the larger sequence number for the entry',
     });
   });
 
