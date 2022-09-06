@@ -29,7 +29,9 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
           `[Middlewares][checkSubjectExists] Metadata object with subject '${subject}' does not exists`
         );
         return next(
-          ErrorFactory.subjectNotFoundError('A metadata object with that subject does not exists')
+          ErrorFactory.subjectNotFoundError(
+            `A metadata object with subject '${subject}' does not exists`
+          )
         );
       }
       logger.log.info(
@@ -86,7 +88,7 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
 
         return next(
           ErrorFactory.olderEntryError(
-            `Entry ${invalidEntry[0]} contains an invalid sequence number. It should be the one unit larger than the larger sequence number for the entry`
+            `Entry ${invalidEntry[0]} contains an invalid sequence number. It should be one unit larger than the larger sequence number for the entry`
           )
         );
       }

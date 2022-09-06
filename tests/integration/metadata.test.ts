@@ -4,8 +4,10 @@ import request from 'supertest';
 import {
   invalidEntryUpdateObject,
   invalidObject,
+  invalidObjectSanitizationErrors,
   invalidSequenceNumberUpdateObject,
   invalidSubjectUpdateObject,
+  querySanitizationErrors,
   queryValidationErrors,
   unexistentUpdateObject,
   updateEntryValidationErrors,
@@ -109,6 +111,26 @@ describe('POST /metadata', () => {
       });
     expect(response.body.internalCode).toEqual('subjectExistsError');
   });
+
+  test('should remove all unsafe characters in keys of request body object', async () => {
+    const response = await request(connectionString)
+      .post('/metadata')
+      .send({
+        '$ubject$..': '',
+        entry1: {
+          value: { $gt: '', a: 1 },
+          sequenceNumber: 1,
+          signatures: [
+            {
+              signature:
+                'f8e4b084c40c92904f162e703335e48c203f4f042217f6b3b2bb529424f89da313cb93af4e29857df563fcac35c406527e7e2588cdc9a0baf34a00635e294201',
+              publicKey: 'e7dd325938ef5a6819127e9a5bc5a661498de8a58c57207674c295e1de22e123',
+            },
+          ],
+        },
+      });
+    expect(response.body).toStrictEqual(invalidObjectSanitizationErrors);
+  });
 });
 
 describe('GET /metadata/:subject', () => {
@@ -121,7 +143,7 @@ describe('GET /metadata/:subject', () => {
     const response = await request(connectionString).get('/metadata/unexisting');
     expect(response.body).toStrictEqual({
       internalCode: 'subjectNotFoundError',
-      message: 'A metadata object with that subject does not exists',
+      message: "A metadata object with subject 'unexisting' does not exists",
     });
   });
 });
@@ -153,7 +175,7 @@ describe('GET /metadata/:subject/properties', () => {
     const response = await request(connectionString).get('/metadata/unexisting/properties');
     expect(response.body).toStrictEqual({
       internalCode: 'subjectNotFoundError',
-      message: 'A metadata object with that subject does not exists',
+      message: "A metadata object with subject 'unexisting' does not exists",
     });
   });
 });
@@ -267,7 +289,7 @@ describe('GET /metadata/:subject/property/:propertyName', () => {
     const response = await request(connectionString).get('/metadata/unexisting/property/subject');
     expect(response.body).toStrictEqual({
       internalCode: 'subjectNotFoundError',
-      message: 'A metadata object with that subject does not exists',
+      message: "A metadata object with subject 'unexisting' does not exists",
     });
   });
 
@@ -347,6 +369,16 @@ describe('POST /metadata/query', () => {
       });
     expect(response.body).toStrictEqual([{}, {}]);
   });
+
+  test('should remove all unsafe characters in keys of request body object', async () => {
+    const response = await request(connectionString)
+      .post('/metadata/query')
+      .send({
+        '$ubject$..': ['valid', 'valid1'],
+        'prop.erti.es': ['subject'],
+      });
+    expect(response.body).toStrictEqual(querySanitizationErrors);
+  });
 });
 
 describe('PUT /metadata/:subject', () => {
@@ -371,7 +403,7 @@ describe('PUT /metadata/:subject', () => {
     expect(response.body).toStrictEqual({
       internalCode: 'olderEntryError',
       message:
-        'Entry entry_property1 contains an invalid sequence number. It should be the one unit larger than the larger sequence number for the entry',
+        'Entry entry_property1 contains an invalid sequence number. It should be one unit larger than the larger sequence number for the entry',
     });
   });
 
@@ -381,7 +413,7 @@ describe('PUT /metadata/:subject', () => {
       .send(unexistentUpdateObject);
     expect(response.body).toStrictEqual({
       internalCode: 'subjectNotFoundError',
-      message: 'A metadata object with that subject does not exists',
+      message: "A metadata object with subject 'unexistent' does not exists",
     });
   });
 

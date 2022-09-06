@@ -40,7 +40,9 @@ describe('Metadata middlewares', () => {
         next
       );
       expect(next).toHaveBeenCalledWith(
-        ErrorFactory.subjectNotFoundError('A metadata object with that subject does not exists')
+        ErrorFactory.subjectNotFoundError(
+          "A metadata object with subject 'unexisting' does not exists"
+        )
       );
     });
 
@@ -151,7 +153,7 @@ describe('Metadata middlewares', () => {
       );
       expect(next).toHaveBeenCalledWith(
         ErrorFactory.subjectNotFoundError(
-          'Entry entry contains an invalid sequence number. It should be the one unit larger than the larger sequence number for the entry'
+          'Entry entry contains an invalid sequence number. It should be one unit larger than the larger sequence number for the entry'
         )
       );
     });
@@ -183,7 +185,7 @@ describe('Metadata middlewares', () => {
       );
       expect(next).toHaveBeenCalledWith(
         ErrorFactory.subjectNotFoundError(
-          'Entry entry contains an invalid sequence number. It should be the one unit larger than the larger sequence number for the entry'
+          'Entry entry contains an invalid sequence number. It should be one unit larger than the larger sequence number for the entry'
         )
       );
     });
