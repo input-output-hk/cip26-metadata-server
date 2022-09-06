@@ -153,7 +153,7 @@ describe('Metadata middlewares', () => {
       );
       expect(next).toHaveBeenCalledWith(
         ErrorFactory.subjectNotFoundError(
-          'Entry entry contains an invalid sequence number. It should be the one unit larger than the larger sequence number for the entry'
+          'Entry entry contains an invalid sequence number. It should be one unit larger than the larger sequence number for the entry'
         )
       );
     });
@@ -185,7 +185,7 @@ describe('Metadata middlewares', () => {
       );
       expect(next).toHaveBeenCalledWith(
         ErrorFactory.subjectNotFoundError(
-          'Entry entry contains an invalid sequence number. It should be the one unit larger than the larger sequence number for the entry'
+          'Entry entry contains an invalid sequence number. It should be one unit larger than the larger sequence number for the entry'
         )
       );
     });
