@@ -2,6 +2,7 @@ import bodyParser from 'body-parser';
 import timeout from 'connect-timeout';
 import express, { Express } from 'express';
 import mongoSanitize from 'express-mongo-sanitize';
+import promMid from 'express-prometheus-middleware';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 
@@ -31,6 +32,16 @@ const buildServer = (
           `Incomming request to ${req.path} contains invalid characters in request.${key}. Those characters were replaced by '_'`
         );
       },
+    })
+  );
+
+  server.use(
+    promMid({
+      metricsPath: '/metrics',
+      collectDefaultMetrics: true,
+      requestDurationBuckets: [0.1, 0.5, 1, 1.5],
+      requestLengthBuckets: [512, 1024, 5120, 10_240, 51_200, 102_400],
+      responseLengthBuckets: [512, 1024, 5120, 10_240, 51_200, 102_400],
     })
   );
 
