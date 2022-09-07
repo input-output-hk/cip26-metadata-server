@@ -19,7 +19,6 @@
     - [Deploy using Docker Compose](#deploy-using-docker-compose)
       - [Setting environmental variables](#setting-environmental-variables-1)
       - [Deploying](#deploying)
-      - [Running tests](#running-tests-1)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -29,8 +28,6 @@ This project was built using
 
 - [![NodeJS][nodejs]][nodejs-url]
 - [![MongoDB][mongodb]][mongodb-url]
-
-Swagger docs are available at TO DO: Add link
 
 ### Components
 
@@ -73,11 +70,11 @@ MongoDB is used as storage service implementing the following schema. (For furth
       "optional": true,
       "properties": {
         "alg": {
-          "type": "string"
+          "type": "string",
           "optional": false
         },
         "msg": {
-          "type": "string"
+          "type": "string",
           "optional": false
         }
       }
@@ -107,22 +104,25 @@ MongoDB is used as storage service implementing the following schema. (For furth
       "optional": true
     },
     "<entry>": {
-      "type": "object",
-      "optional": "false",
-      "properties": {
-        "value": {},
-        "sequenceNumber": { 
-          "type": "integer",
-          "optional": false
-         },
-        "signatures": { 
-          "type": "array",
-          "optional": "false",
-          "items": {
-            "type": "object",
-            "properties": {
-              "publicKey": "string",
-              "signature": "string"
+      "type": "array",
+      "optional": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "value": {},
+          "sequenceNumber": { 
+            "type": "integer",
+            "optional": false
+           },
+          "signatures": { 
+            "type": "array",
+            "optional": "false",
+            "items": {
+              "type": "object",
+              "properties": {
+                "publicKey": "string",
+                "signature": "string"
+              }
             }
           }
         }
@@ -135,8 +135,7 @@ MongoDB is used as storage service implementing the following schema. (For furth
 
 - The application does not manage ownership over database objects. Every user could modify every object. This kind of permissions should be implemented on further developments or by another service.
 - There is no authentication method for requests for the moment. This can be implemented on further developments too.
-
-TO DO: Keep adding considerations
+- The metrics endpoint is exposed at `/metrics` and who deploys the application should decide if it should be hidden and implement a gateway to hide it if necessary. 
   
 ## Getting started
 
@@ -150,10 +149,13 @@ npm run install
 
 #### Setting up database
 
-Create a MongoDB database and set the DATABASE_URL variable on `.env` file.
+Create a MongoDB database and set the database config variables on `.env` file.
 
 ```bash
-DATABASE_URL=mongodb+srv://<username>:<password>@<your-cluster-url>/test?retryWrites=true&w=majority
+DB_PASS=secret-password
+DB_USERNAME=some-username
+DB_CLUSTER=some-cluster
+DB_NAME=dapp
 ```
 
 #### Setting environmental variables
@@ -168,6 +170,8 @@ Start the application running
 ```bash
 npm run dev
 ```
+
+Once the application is started swagger docs can be found at `<server-url>/docs`.
 
 #### Running tests
 
@@ -202,9 +206,7 @@ The application can be started locally via Docker Compose.
 docker-compose up
 ```
 
-#### Running tests
-
-TO DO: Set instruction to run dockerized test suites.
+Once the application is started swagger docs can be found at `<server-url>/docs`.
 
 ## Contributing
 
