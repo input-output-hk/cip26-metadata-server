@@ -19,7 +19,6 @@
     - [Deploy using Docker Compose](#deploy-using-docker-compose)
       - [Setting environmental variables](#setting-environmental-variables-1)
       - [Deploying](#deploying)
-      - [Running tests](#running-tests-1)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -29,8 +28,6 @@ This project was built using
 
 - [![NodeJS][nodejs]][nodejs-url]
 - [![MongoDB][mongodb]][mongodb-url]
-
-Swagger docs are available at TO DO: Add link
 
 ### Components
 
@@ -73,11 +70,11 @@ MongoDB is used as storage service implementing the following schema. (For furth
       "optional": true,
       "properties": {
         "alg": {
-          "type": "string"
+          "type": "string",
           "optional": false
         },
         "msg": {
-          "type": "string"
+          "type": "string",
           "optional": false
         }
       }
@@ -135,8 +132,6 @@ MongoDB is used as storage service implementing the following schema. (For furth
 
 - The application does not manage ownership over database objects. Every user could modify every object. This kind of permissions should be implemented on further developments or by another service.
 - There is no authentication method for requests for the moment. This can be implemented on further developments too.
-
-TO DO: Keep adding considerations
   
 ## Getting started
 
@@ -168,6 +163,8 @@ Start the application running
 ```bash
 npm run dev
 ```
+
+Once the application is started swagger docs can be found at `<server-url>/docs`.
 
 #### Running tests
 
@@ -202,9 +199,7 @@ The application can be started locally via Docker Compose.
 docker-compose up
 ```
 
-#### Running tests
-
-TO DO: Set instruction to run dockerized test suites.
+Once the application is started swagger docs can be found at `<server-url>/docs`.
 
 ## Contributing
 
