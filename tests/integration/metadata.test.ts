@@ -10,6 +10,7 @@ import {
   querySanitizationErrors,
   queryValidationErrors,
   unexistentUpdateObject,
+  updateEmptyBodyValidationErrors,
   updateEntryValidationErrors,
   updateSubjectValidationErrors,
   validationErrors,
@@ -389,6 +390,11 @@ describe('PUT /metadata/:subject', () => {
     expect(response.body).toStrictEqual(updateSubjectValidationErrors);
   });
 
+  test('should not allow to update a metadata object with an empty body (at least one entry is required)', async () => {
+    const response = await request(connectionString).put('/metadata/valid').send({});
+    expect(response.body).toStrictEqual(updateEmptyBodyValidationErrors);
+  });
+
   test('should not allow to update a metadata object with an invalid entry', async () => {
     const response = await request(connectionString)
       .put('/metadata/subject')
@@ -407,7 +413,7 @@ describe('PUT /metadata/:subject', () => {
     });
   });
 
-  test('Should throw error if subject not exist', async () => {
+  test('should throw error if subject not exist', async () => {
     const response = await request(connectionString)
       .put('/metadata/unexistent')
       .send(unexistentUpdateObject);
@@ -417,7 +423,7 @@ describe('PUT /metadata/:subject', () => {
     });
   });
 
-  test('Should update correctly. Check status', async () => {
+  test('should update correctly. Check status', async () => {
     const response = await request(connectionString).put('/metadata/valid').send(validUpdateObject);
     expect(response.status).toBe(204);
   });

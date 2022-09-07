@@ -28,6 +28,9 @@ const encodeMessage = (subject: string, entry: Entry, entryName: string) => {
 };
 
 const validateSignaturesForEntry = (subject: string, entry: Entry, entryName: string): boolean => {
+  if (!entry.signatures || entry.signatures.length === 0) {
+    return false;
+  }
   for (const element of entry.signatures) {
     try {
       const encodedMessage = encodeMessage(subject, entry, entryName);
@@ -54,23 +57,29 @@ export interface SignaturesMiddleware {
 const configure = (logger: Logger): SignaturesMiddleware => ({
   validateSignatures: (request: Request, response: Response, next: NextFunction) => {
     logger.log.info('[Middleware][validateSignatures] Validating signatures');
-    for (const [key, value] of Object.entries(request.body)) {
-      if (!WELL_KNOWN_PROPERTIES.includes(key)) {
-        logger.log.error(`Entry ${key} does not contain a valid signature`);
-        const validSignature = validateSignaturesForEntry(
-          request.body.subject || request.params.subject,
-          value as Entry,
-          key
-        );
-        if (!validSignature) {
-          logger.log.error(`Entry ${key} does not contain a valid signature`);
-          return next(
-            ErrorFactory.invalidSignatures(`Entry ${key} does not contain a valid signature`)
+    try {
+      for (const [key, value] of Object.entries(request.body)) {
+        if (!WELL_KNOWN_PROPERTIES.includes(key)) {
+          const validSignature = validateSignaturesForEntry(
+            request.body.subject || request.params.subject,
+            value as Entry,
+            key
           );
+          if (!validSignature) {
+            logger.log.error(`Entry ${key} does not contain a valid signature`);
+            return next(
+              ErrorFactory.invalidSignatures(`Entry ${key} does not contain a valid signature`)
+            );
+          }
         }
       }
+      return next();
+    } catch (error) {
+      logger.log.error(`There was an internal error validating signatures: ${error}`);
+      return next(
+        ErrorFactory.unmappedError(`There was an internal error validating signatures: ${error}`)
+      );
     }
-    return next();
   },
 });
 

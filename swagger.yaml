@@ -53,6 +53,30 @@ paths:
                 $ref: '#/components/schemas/MetadataObjectBySubject'
         '404':
           description: Metadata object not found
+    put:
+      summary: Update one or more entries of the metadata object associated with the provided subject
+      description: "1) This endpoint only accept updates for metadata entries that have a higher sequence number than the previous entry.\n\n2) This endpoint always verify well-formedness of metadata entries before accepting them.\n\n3) This endpoint always cryptographically verify metadata entries' signatures before accepting them."
+      operationId: metadata-update
+      parameters:
+        - in: path
+          name: subject
+          schema:
+            type: string
+          required: true
+          description: Subject of the metadata object to update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetadataObjectPropertyEntry'
+        required: true
+      responses:
+        '204':
+          description: Metadata object updated
+        '404':
+          description: Metadata object not found
+        '500':
+          description: Server unavailable
   /metadata/{subject}/properties:
     get:
       summary: Get all the property names which are available for the metadata object associated with the provided subject
