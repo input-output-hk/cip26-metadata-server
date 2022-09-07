@@ -39,7 +39,7 @@ describe('Signatures middlewares', () => {
       );
       expect(next).toHaveBeenCalledWith();
     });
-    test('Should throw error if there are no signatures for entry', async () => {
+    test('Should throw an error if there are no signatures for entry', async () => {
       await signaturesMiddleware.validateSignatures(
         mockRequest({ subject: 'test', entry: { value: 1, sequenceNumber: 2, signatures: [] } }),
         mockResponse,
@@ -50,7 +50,7 @@ describe('Signatures middlewares', () => {
         ErrorFactory.subjectNotFoundError('Entry entry does not contain a valid signature')
       );
     });
-    test('Should throw error if signatures field is undefined for entry', async () => {
+    test('Should throw an error if signatures field is undefined for entry', async () => {
       await signaturesMiddleware.validateSignatures(
         mockRequest({ subject: 'test', entry: { value: 1, sequenceNumber: 2 } }),
         mockResponse,
@@ -61,7 +61,7 @@ describe('Signatures middlewares', () => {
       );
     });
 
-    test('Should throw error if there are no valid signatures (missing signature and malformed publicKey)', async () => {
+    test('Should throw an error if there are no valid signatures (missing signature and malformed publicKey)', async () => {
       await signaturesMiddleware.validateSignatures(
         mockRequest({
           subject: 'test',
@@ -83,7 +83,7 @@ describe('Signatures middlewares', () => {
       );
     });
 
-    test('Should throw error if there are no valid signatures (missing publicKey and malformed signature)', async () => {
+    test('Should throw an error if there are no valid signatures (missing publicKey and malformed signature)', async () => {
       await signaturesMiddleware.validateSignatures(
         mockRequest({
           subject: 'test',
@@ -102,7 +102,7 @@ describe('Signatures middlewares', () => {
       );
     });
 
-    test('Should throw error if there are no valid signatures (missing publicKey and signature)', async () => {
+    test('Should throw an error if there are no valid signatures (missing publicKey and signature)', async () => {
       await signaturesMiddleware.validateSignatures(
         mockRequest({
           subject: 'test',
@@ -120,7 +120,7 @@ describe('Signatures middlewares', () => {
       );
     });
 
-    test('Should throw error if there are no valid signatures (missing publicKey and signature signature)', async () => {
+    test('Should throw an error if there are no valid signatures (missing publicKey and signature signature)', async () => {
       await signaturesMiddleware.validateSignatures(
         mockRequest({
           subject: 'test',
@@ -138,7 +138,7 @@ describe('Signatures middlewares', () => {
       );
     });
 
-    test('Should throw error if there are no valid signatures (malformed publicKey and signature)', async () => {
+    test('Should throw an error if there are no valid signatures (malformed publicKey and signature)', async () => {
       await signaturesMiddleware.validateSignatures(
         mockRequest({
           subject: 'test',
@@ -161,7 +161,7 @@ describe('Signatures middlewares', () => {
       );
     });
 
-    test('Should tpass if there is one valid signature', async () => {
+    test('Should pass if there is one valid signature', async () => {
       await signaturesMiddleware.validateSignatures(
         mockRequest({
           subject: 'valid',
