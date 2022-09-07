@@ -202,6 +202,18 @@ export const updateSubjectValidationErrors = [
   },
 ];
 
+export const updateEmptyBodyValidationErrors = [
+  {
+    instancePath: '',
+    schemaPath: '#/minProperties',
+    keyword: 'minProperties',
+    params: {
+      limit: 1,
+    },
+    message: 'must NOT have fewer than 1 properties',
+  },
+];
+
 export const updateEntryValidationErrors = [
   {
     instancePath: '/entry_property1/signatures/0/signature',

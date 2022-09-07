@@ -1,4 +1,6 @@
 {
+  "type": "object",
+  "minProperties": 1,
   "additionalProperties": {
     "$ref": "#/definitions/entry"
   },
@@ -17,7 +19,11 @@
     "entry": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["value", "sequenceNumber", "signatures"],
+      "required": [
+        "value",
+        "sequenceNumber",
+        "signatures"
+      ],
       "properties": {
         "value": {},
         "sequenceNumber": {
@@ -42,7 +48,10 @@
     "signature": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["publicKey", "signature"],
+      "required": [
+        "publicKey",
+        "signature"
+      ],
       "properties": {
         "publicKey": {
           "type": "string",
