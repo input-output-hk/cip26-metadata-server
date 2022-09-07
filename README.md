@@ -29,8 +29,6 @@ This project was built using
 - [![NodeJS][nodejs]][nodejs-url]
 - [![MongoDB][mongodb]][mongodb-url]
 
-Swagger docs are available at TO DO: Add link
-
 ### Components
 
 This solutions consists of a backend server that implements a REST API, and a MongoDB database.
@@ -173,6 +171,8 @@ Start the application running
 npm run dev
 ```
 
+Once the application is started swagger docs can be found at `<server-url>/docs`.
+
 #### Running tests
 
 Running unit tests:
@@ -205,6 +205,8 @@ The application can be started locally via Docker Compose.
 ```bash
 docker-compose up
 ```
+
+Once the application is started swagger docs can be found at `<server-url>/docs`.
 
 ## Contributing
 
