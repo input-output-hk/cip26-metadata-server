@@ -3,6 +3,7 @@ import timeout from 'connect-timeout';
 import express, { Express } from 'express';
 import mongoSanitize from 'express-mongo-sanitize';
 import promMid from 'express-prometheus-middleware';
+import requestID, { Request } from 'request-id/express';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 
@@ -45,8 +46,9 @@ const buildServer = (
     })
   );
 
-  server.use((request, response, next) => {
-    logger.log.info(`New request: ${request.method} ${request.path}`);
+  server.use(requestID());
+  server.use((request: Request, response, next) => {
+    logger.log.info(`New RequestId: ${request.requestId} ${request.method} ${request.path}`);
     return next();
   });
   server.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

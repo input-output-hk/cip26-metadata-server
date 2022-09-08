@@ -13,13 +13,13 @@ export const connectToDatabase = (connectionData: CONNECTION_DATA, logger: Logge
   }
   try {
     logger.log.info(
-      `[connectToDatabase] Initializing connection to ${connectionData.dbName} database`
+      `[DB][connectToDatabase] Initializing connection to ${connectionData.dbName} database`
     );
     const client = new MongoClient(connectionData.dbUri);
     return client.db(connectionData.dbName);
   } catch (error) {
     logger.log.error(
-      `[connectToDatabase] Error initializing connection to ${connectionData.dbName} database: ${error}`
+      `[DB][connectToDatabase] Error initializing connection to ${connectionData.dbName} database: ${error}`
     );
     throw error;
   }

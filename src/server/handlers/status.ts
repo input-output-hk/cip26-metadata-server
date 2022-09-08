@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { Request } from 'request-id/express';
 
 import { Logger } from '../logger/logger';
 
@@ -8,8 +9,7 @@ export interface StatusHandler {
 
 const configure = (logger: Logger): StatusHandler => ({
   getStatus: (request: Request, response: Response) => {
-    logger.log.info('[getStatus] Server status: UP');
-
+    logger.log.info(`[Handlers][getStatus][${request.requestId}] Server status: UP`);
     return response.send({ up: true });
   },
 });
