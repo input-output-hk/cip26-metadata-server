@@ -44,7 +44,7 @@ The structure of the project can be divided into 4 layers.
 
 * **Routes**: Mapping layer. The endpoints and links to handlers are defined here.
 * **Middlewares**: Validation layer. Request format and schema validation are implemented in this layer.
-* **Handlers**: Include the request handling layer as well as the business logic layer.
+* **Handlers**: Request handling and business logic layer.
 * **Services**: Integration with external services and the database. Should not include business logic.
 
 #### MongoDB
