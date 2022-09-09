@@ -16,7 +16,7 @@
       - [Setting environmental variables](#setting-environmental-variables)
       - [Starting the application](#starting-the-application)
       - [Running tests](#running-tests)
-    - [Deploy using Docker Compose](#deploy-using-docker-compose)
+    - [Deployment using Docker Compose](#deployment-using-docker-compose)
       - [Setting environmental variables](#setting-environmental-variables-1)
       - [Deploying](#deploying)
   - [Contributing](#contributing)
