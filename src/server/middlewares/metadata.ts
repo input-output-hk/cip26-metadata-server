@@ -22,12 +22,12 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
     checkSubjectExists: async (request: Request, response: Response, next: NextFunction) => {
       const subject = request.params.subject;
       logger.log.info(
-        `[Middlewares][checkSubjectExists][${request.requestId}] Checking that metadata object with subject '${subject}' exists`
+        `[${request.requestId}][Middleware][checkSubjectExists] Checking that metadata object with subject '${subject}' exists`
       );
       const metadataObject = await services.databaseService.getObject({ subject });
       if (!metadataObject) {
         logger.log.error(
-          `[Middlewares][checkSubjectExists][${request.requestId}] Metadata object with subject '${subject}' does not exists`
+          `[${request.requestId}][Middleware][checkSubjectExists] Metadata object with subject '${subject}' does not exists`
         );
         return next(
           ErrorFactory.subjectNotFoundError(
@@ -36,7 +36,7 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
         );
       }
       logger.log.info(
-        `[Middlewares][checkSubjectExists][${request.requestId}] Metadata object with subject '${subject}' does exist. Retrieving object`
+        `[${request.requestId}][Middleware][checkSubjectExists] Metadata object with subject '${subject}' does exist. Retrieving object`
       );
       const request_ = request as CustomRequest;
       request_.metadataObject = metadataObject;
@@ -46,19 +46,19 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
     checkSubjectNotExists: async (request: Request, response: Response, next: NextFunction) => {
       const subject = request.body.subject;
       logger.log.info(
-        `[Middlewares][checkSubjectNotExists][${request.requestId}] Checking that metadata object with subject '${subject}' does not exists`
+        `[${request.requestId}][Middleware][checkSubjectNotExists] Checking that metadata object with subject '${subject}' does not exists`
       );
       const object = await services.databaseService.getObject({ subject });
       if (object) {
         logger.log.error(
-          `[Middlewares][checkSubjectNotExists][${request.requestId}] Metadata object with subject ${subject} already exists`
+          `[${request.requestId}][Middleware][checkSubjectNotExists] Metadata object with subject ${subject} already exists`
         );
         return next(
           ErrorFactory.subjectExistsError('A metadata object with that subject already exists')
         );
       }
       logger.log.info(
-        `[Middlewares][checkSubjectNotExists][${request.requestId}] Metadata object with subject '${subject}' does not exist. Creating object`
+        `[${request.requestId}][Middleware][checkSubjectNotExists] Metadata object with subject '${subject}' does not exist. Creating object`
       );
       return next();
     },
@@ -68,7 +68,7 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
       const metadataObjectProperties = Object.keys(metadataObject);
 
       logger.log.info(
-        `[Middlewares][checkSequenceNumbers][${request.requestId}] Checking that metadata object '${metadataObject.subject}' does not contain invalid sequence numbers`
+        `[${request.requestId}][Middleware][checkSequenceNumbers] Checking that metadata object '${metadataObject.subject}' does not contain invalid sequence numbers`
       );
 
       const invalidEntry = Object.entries(request.body).find(([key, value]) => {
@@ -84,7 +84,7 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
 
       if (invalidEntry) {
         logger.log.info(
-          `[Middlewares][checkSequenceNumbers][${request.requestId}] Entry '${invalidEntry[0]}' contains an invalid sequence number`
+          `[${request.requestId}][Middleware][checkSequenceNumbers] Entry '${invalidEntry[0]}' contains an invalid sequence number`
         );
 
         return next(
@@ -95,7 +95,7 @@ const configure = (logger: Logger, services: Services): MetadataMiddleware => {
       }
 
       logger.log.info(
-        `[Middlewares][checkSequenceNumbers][${request.requestId}] Sequence number checked correctly`
+        `[${request.requestId}][Middleware][checkSequenceNumbers] Sequence number checked correctly`
       );
       return next();
     },

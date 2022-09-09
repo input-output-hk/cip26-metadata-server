@@ -50,18 +50,18 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     const { subject } = request.body;
     try {
       logger.log.info(
-        `[Handlers][createObject][${request.requestId}] Creating metadata object with subject '${subject}'`
+        `[${request.requestId}][Handler][createObject] Creating metadata object with subject '${subject}'`
       );
       await services.databaseService.insertObject(
         metadataMappers.mapMetadataProperties(request.body)
       );
       logger.log.info(
-        `[Handlers][createObject][${request.requestId}] Metadata object '${subject}' was successfully created`
+        `[${request.requestId}][Handler][createObject] Metadata object '${subject}' was successfully created`
       );
       return response.sendStatus(201);
     } catch (error) {
       logger.log.error(
-        `[Handler][createObject][${request.requestId}] Error creating metadata object with subject '${subject}'`
+        `[${request.requestId}][Handler][createObject] Error creating metadata object with subject '${subject}'`
       );
       return next(error);
     }
@@ -75,19 +75,19 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     const { subject } = request.params;
     try {
       logger.log.info(
-        `[Handlers][getObjectBySubject][${request.requestId}] Retrieving metadata object with subject '${subject}'`
+        `[${request.requestId}][Handler][getObjectBySubject] Retrieving metadata object with subject '${subject}'`
       );
       const { metadataObject } = request as CustomRequest;
       delete metadataObject._id;
       logger.log.info(
-        `[Handlers][getObjectBySubject][${request.requestId}] Metadata object '${subject}' was successfully retrieved`
+        `[${request.requestId}][Handler][getObjectBySubject] Metadata object '${subject}' was successfully retrieved`
       );
       return response
         .status(200)
         .send(metadataMappers.mapGetObjectBySubjectResponse(metadataObject));
     } catch (error) {
       logger.log.error(
-        `[Handler][getObjectBySubject][${request.requestId}] Error retrieving metadata object with subject '${subject}'`
+        `[${request.requestId}][Handler][getObjectBySubject] Error retrieving metadata object with subject '${subject}'`
       );
       return next(error);
     }
@@ -101,17 +101,17 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     const { subject } = request.params;
     try {
       logger.log.info(
-        `[Handlers][getPropertyNames][${request.requestId}] Retrieving property names for '${subject}'`
+        `[${request.requestId}][Handler][getPropertyNames] Retrieving property names for '${subject}'`
       );
       const { metadataObject } = request as CustomRequest;
       delete metadataObject._id;
       logger.log.info(
-        `[Handlers][getPropertyNames][${request.requestId}] Property names for '${subject}' were successfully retrieved`
+        `[${request.requestId}][Handler][getPropertyNames] Property names for '${subject}' were successfully retrieved`
       );
       return response.status(200).send(Object.keys(metadataObject));
     } catch (error) {
       logger.log.error(
-        `[Handler][getPropertyNames][${request.requestId}] Error retrieving property names for '${subject}'`
+        `[${request.requestId}][Handler][getPropertyNames] Error retrieving property names for '${subject}'`
       );
       return next(error);
     }
@@ -125,14 +125,14 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     const { subject } = request.params;
     try {
       logger.log.info(
-        `[Handlers][getProperty][${request.requestId}] Retrieving property for '${subject}'`
+        `[${request.requestId}][Handler][getProperty] Retrieving property for '${subject}'`
       );
       const propertyName = request.params.propertyName;
       const { metadataObject } = request as CustomRequest;
       delete metadataObject._id;
       if (!(propertyName in metadataObject)) {
         logger.log.error(
-          `[Handlers][getProperty][${request.requestId}] Metadata object with subject '${subject}' does not contains property '${propertyName}'`
+          `[${request.requestId}][Handler][getProperty] Metadata object with subject '${subject}' does not contains property '${propertyName}'`
         );
         throw ErrorFactory.propertyNotFoundError(
           `Property '${propertyName}' does not exists in metadata object with subject '${subject}'`
@@ -140,12 +140,12 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
       }
       const mappedObject = metadataMappers.mapGetObjectBySubjectResponse(metadataObject);
       logger.log.info(
-        `[Handlers][getProperty][${request.requestId}] Property '${propertyName}' was successfully retrieved`
+        `[${request.requestId}][Handler][getProperty] Property '${propertyName}' was successfully retrieved`
       );
       return response.status(200).send({ [propertyName]: mappedObject[propertyName] });
     } catch (error) {
       logger.log.error(
-        `[Handler][getProperty][${request.requestId}] Error retrieving property for '${subject}'`
+        `[${request.requestId}][Handler][getProperty] Error retrieving property for '${subject}'`
       );
       return next(error);
     }
@@ -157,10 +157,10 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     next: NextFunction
   ): Promise<Response<object[]> | void> => {
     try {
-      logger.log.info(`[Handlers][queryObjects][${request.requestId}] Querying metadata objects`);
+      logger.log.info(`[${request.requestId}][Handler][queryObjects] Querying metadata objects`);
       const { subjects, properties } = request.body;
       const metadataObjects = await services.databaseService.queryObjects(subjects, properties);
-      logger.log.info(`[Handlers][queryObjects][${request.requestId}] Query results retrieved`);
+      logger.log.info(`[${request.requestId}][Handler][queryObjects] Query results retrieved`);
       const mappedObjects = metadataObjects?.map((metadataObject) => {
         delete metadataObject._id;
         return metadataMappers.mapGetObjectBySubjectResponse(metadataObject);
@@ -168,7 +168,7 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
       return response.status(200).send(mappedObjects);
     } catch (error) {
       logger.log.error(
-        `[Handler][queryObjects][${request.requestId}] Error querying metadata objects`
+        `[${request.requestId}][Handler][queryObjects] Error querying metadata objects`
       );
       return next(error);
     }
@@ -182,7 +182,7 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
     const subject: string = request.params.subject;
     try {
       logger.log.info(
-        `[Handlers][updateObject][${request.requestId}] Updating metadata object with subject '${subject}'`
+        `[${request.requestId}][Handler][updateObject] Updating metadata object with subject '${subject}'`
       );
       const { metadataObject } = request as CustomRequest;
       const metadataObjectProperties = Object.keys(metadataObject);
@@ -200,12 +200,12 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
 
       await services.databaseService.updateObject({ subject }, updates);
       logger.log.info(
-        `[Handlers][updateObject][${request.requestId}] Metadata object '${subject}' was successfully updated`
+        `[${request.requestId}][Handler][updateObject] Metadata object '${subject}' was successfully updated`
       );
       return response.sendStatus(204);
     } catch (error) {
       logger.log.error(
-        `[Handler][createObject][${request.requestId}] Error updating metadata object with subject '${subject}'`
+        `[${request.requestId}][Handler][createObject] Error updating metadata object with subject '${subject}'`
       );
       return next(error);
     }

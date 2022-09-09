@@ -98,15 +98,15 @@ const configure = (logger: Logger): SchemaValidatorMiddleware => {
   const validateUpdate = getValidateUpdateFunction();
   return {
     validateSchema: (request: Request, response: Response, next: NextFunction) => {
-      logger.log.info(`[Middlewares][validateSchema][${request.requestId}] Validating json schema`);
+      logger.log.info(`[${request.requestId}][Middleware][validateSchema] Validating json schema`);
       if (validate(request.body)) {
         logger.log.info(
-          `[Middlewares][validateSchema][${request.requestId}] Successful json schema validation`
+          `[${request.requestId}][Middleware][validateSchema] Successful json schema validation`
         );
         return next();
       } else {
         logger.log.error(
-          `[Middlewares][validateSchema][${request.requestId}] Errors found in json schema validation`
+          `[${request.requestId}][Middleware][validateSchema] Errors found in json schema validation`
         );
         return next(new ValidationError(validate.errors));
       }
@@ -114,16 +114,16 @@ const configure = (logger: Logger): SchemaValidatorMiddleware => {
 
     validateBatchQueryRequestBody: (request: Request, response: Response, next: NextFunction) => {
       logger.log.info(
-        `[Middlewares][validateBatchQueryRequestBody][${request.requestId}] Validating query request body`
+        `[${request.requestId}][Middleware][validateBatchQueryRequestBody] Validating query request body`
       );
       if (validateQuery(request.body)) {
         logger.log.info(
-          `[Middlewares][validateBatchQueryRequestBody][${request.requestId}] Successful query request body validation`
+          `[${request.requestId}][Middleware][validateBatchQueryRequestBody] Successful query request body validation`
         );
         return next();
       } else {
         logger.log.error(
-          `[Middlewares][validateBatchQueryRequestBody][${request.requestId}] Errors found in query request body validation`
+          `[${request.requestId}][Middleware][validateBatchQueryRequestBody] Errors found in query request body validation`
         );
         return next(new ValidationError(validateQuery.errors));
       }
@@ -131,16 +131,16 @@ const configure = (logger: Logger): SchemaValidatorMiddleware => {
 
     validateUpdateSchema: (request: Request, response: Response, next: NextFunction) => {
       logger.log.info(
-        `[Middlewares][validateUpdateSchema][${request.requestId}] Validating update schema`
+        `[${request.requestId}][Middleware][validateUpdateSchema] Validating update schema`
       );
       if (validateUpdate(request.body)) {
         logger.log.info(
-          `[Middlewares][validateUpdateSchema][${request.requestId}] Successful update schema validation`
+          `[${request.requestId}][Middleware][validateUpdateSchema] Successful update schema validation`
         );
         return next();
       } else {
         logger.log.error(
-          `[Middlewares][validateUpdateSchema][${request.requestId}] Errors found in update schema validation`
+          `[${request.requestId}][Middleware][validateUpdateSchema] Errors found in update schema validation`
         );
         return next(new ValidationError(validateUpdate.errors));
       }

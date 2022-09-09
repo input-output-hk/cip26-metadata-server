@@ -9,7 +9,7 @@ export interface StatusHandler {
 
 const configure = (logger: Logger): StatusHandler => ({
   getStatus: (request: Request, response: Response) => {
-    logger.log.info(`[Handlers][getStatus][${request.requestId}] Server status: UP`);
+    logger.log.info(`[${request.requestId}][Handler][getStatus] Server status: UP`);
     return response.send({ up: true });
   },
 });

@@ -57,7 +57,7 @@ export interface SignaturesMiddleware {
 
 const configure = (logger: Logger): SignaturesMiddleware => ({
   validateSignatures: (request: Request, response: Response, next: NextFunction) => {
-    logger.log.info(`[Middleware][validateSignatures][${request.requestId}] Validating signatures`);
+    logger.log.info(`[${request.requestId}][Middleware][validateSignatures] Validating signatures`);
     try {
       for (const [key, value] of Object.entries(request.body)) {
         if (!WELL_KNOWN_PROPERTIES.includes(key)) {
@@ -68,7 +68,7 @@ const configure = (logger: Logger): SignaturesMiddleware => ({
           );
           if (!validSignature) {
             logger.log.error(
-              `[Middleware][validateSignatures][${request.requestId}] Entry '${key}' does not contain a valid signature`
+              `[${request.requestId}][Middleware][validateSignatures] Entry '${key}' does not contain a valid signature`
             );
             return next(
               ErrorFactory.invalidSignatures(`Entry ${key} does not contain a valid signature`)
@@ -79,7 +79,7 @@ const configure = (logger: Logger): SignaturesMiddleware => ({
       return next();
     } catch (error) {
       logger.log.error(
-        `[Middleware][validateSignatures][${request.requestId}] There was an internal error validating signatures: ${error}`
+        `[${request.requestId}][Middleware][validateSignatures] There was an internal error validating signatures: ${error}`
       );
       return next(
         ErrorFactory.unmappedError(`There was an internal error validating signatures: ${error}`)
