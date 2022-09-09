@@ -42,6 +42,7 @@
     "http-errors": "2.0.0",
     "http-status": "1.5.2",
     "mongodb": "4.8.1",
+    "request-id": "0.11.1",
     "swagger-ui-express": "4.5.0",
     "tweetnacl": "1.0.3",
     "winston": "3.8.1",

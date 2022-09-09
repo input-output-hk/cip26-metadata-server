@@ -298,7 +298,7 @@ describe('GET /metadata/:subject/property/:propertyName', () => {
     const response = await request(connectionString).get('/metadata/valid1/property/unexisting');
     expect(response.body).toStrictEqual({
       internalCode: 'propertyNotFoundError',
-      message: "Property 'unexisting' does not exists",
+      message: "Property 'unexisting' does not exists in metadata object with subject 'valid1'",
     });
   });
 });

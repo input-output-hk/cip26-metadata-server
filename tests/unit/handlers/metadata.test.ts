@@ -175,7 +175,9 @@ describe('Metadata handlers', () => {
         next
       );
       expect(next).toHaveBeenCalledWith(
-        ErrorFactory.propertyNotFoundError("Property 'unexisting' does not exists")
+        ErrorFactory.propertyNotFoundError(
+          "Property 'unexisting' does not exists in metadata object with subject 'subject object #2'"
+        )
       );
     });
   });

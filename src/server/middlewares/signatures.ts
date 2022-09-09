@@ -1,6 +1,7 @@
 import blake2 from 'blake2';
 import cbor from 'cbor';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
+import { Request } from 'request-id/express';
 import nacl from 'tweetnacl';
 
 import { Entry } from '../../types/metadata';
@@ -56,7 +57,7 @@ export interface SignaturesMiddleware {
 
 const configure = (logger: Logger): SignaturesMiddleware => ({
   validateSignatures: (request: Request, response: Response, next: NextFunction) => {
-    logger.log.info('[Middleware][validateSignatures] Validating signatures');
+    logger.log.info(`[${request.requestId}][Middleware][validateSignatures] Validating signatures`);
     try {
       for (const [key, value] of Object.entries(request.body)) {
         if (!WELL_KNOWN_PROPERTIES.includes(key)) {
@@ -66,7 +67,9 @@ const configure = (logger: Logger): SignaturesMiddleware => ({
             key
           );
           if (!validSignature) {
-            logger.log.error(`Entry ${key} does not contain a valid signature`);
+            logger.log.error(
+              `[${request.requestId}][Middleware][validateSignatures] Entry '${key}' does not contain a valid signature`
+            );
             return next(
               ErrorFactory.invalidSignatures(`Entry ${key} does not contain a valid signature`)
             );
@@ -75,7 +78,9 @@ const configure = (logger: Logger): SignaturesMiddleware => ({
       }
       return next();
     } catch (error) {
-      logger.log.error(`There was an internal error validating signatures: ${error}`);
+      logger.log.error(
+        `[${request.requestId}][Middleware][validateSignatures] There was an internal error validating signatures: ${error}`
+      );
       return next(
         ErrorFactory.unmappedError(`There was an internal error validating signatures: ${error}`)
       );

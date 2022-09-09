@@ -1,7 +1,8 @@
 import Ajv from 'ajv';
 import { DataValidateFunction } from 'ajv/dist/types';
 import addFormats from 'ajv-formats';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
+import { Request } from 'request-id/express';
 
 import { ValidationError } from '../errors/error-factory';
 import queryRequestBodySchema from '../helpers/schemas/query-request-body.json';
@@ -97,39 +98,49 @@ const configure = (logger: Logger): SchemaValidatorMiddleware => {
   const validateUpdate = getValidateUpdateFunction();
   return {
     validateSchema: (request: Request, response: Response, next: NextFunction) => {
-      logger.log.info('[Middlewares][validateSchema] Validating json schema');
+      logger.log.info(`[${request.requestId}][Middleware][validateSchema] Validating json schema`);
       if (validate(request.body)) {
-        logger.log.info('[Middlewares][validateSchema] Successful json schema validation');
+        logger.log.info(
+          `[${request.requestId}][Middleware][validateSchema] Successful json schema validation`
+        );
         return next();
       } else {
-        logger.log.error('[Middlewares][validateSchema] Errors found in json schema validation');
+        logger.log.error(
+          `[${request.requestId}][Middleware][validateSchema] Errors found in json schema validation`
+        );
         return next(new ValidationError(validate.errors));
       }
     },
 
     validateBatchQueryRequestBody: (request: Request, response: Response, next: NextFunction) => {
-      logger.log.info('[Middlewares][validateBatchQueryRequestBody] Validating query request body');
+      logger.log.info(
+        `[${request.requestId}][Middleware][validateBatchQueryRequestBody] Validating query request body`
+      );
       if (validateQuery(request.body)) {
         logger.log.info(
-          '[Middlewares][validateBatchQueryRequestBody] Successful query request body validation'
+          `[${request.requestId}][Middleware][validateBatchQueryRequestBody] Successful query request body validation`
         );
         return next();
       } else {
         logger.log.error(
-          '[Middlewares][validateBatchQueryRequestBody] Errors found in query request body validation'
+          `[${request.requestId}][Middleware][validateBatchQueryRequestBody] Errors found in query request body validation`
         );
         return next(new ValidationError(validateQuery.errors));
       }
     },
 
     validateUpdateSchema: (request: Request, response: Response, next: NextFunction) => {
-      logger.log.info('[Middlewares][validateUpdateSchema] Validating update schema');
+      logger.log.info(
+        `[${request.requestId}][Middleware][validateUpdateSchema] Validating update schema`
+      );
       if (validateUpdate(request.body)) {
-        logger.log.info('[Middlewares][validateUpdateSchema] Successful update schema validation');
+        logger.log.info(
+          `[${request.requestId}][Middleware][validateUpdateSchema] Successful update schema validation`
+        );
         return next();
       } else {
         logger.log.error(
-          '[Middlewares][validateUpdateSchema] Errors found in update schema validation'
+          `[${request.requestId}][Middleware][validateUpdateSchema] Errors found in update schema validation`
         );
         return next(new ValidationError(validateUpdate.errors));
       }
