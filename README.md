@@ -16,7 +16,7 @@
       - [Setting environmental variables](#setting-environmental-variables)
       - [Starting the application](#starting-the-application)
       - [Running tests](#running-tests)
-    - [Deploy using Docker Compose](#deploy-using-docker-compose)
+    - [Deployment using Docker Compose](#deployment-using-docker-compose)
       - [Setting environmental variables](#setting-environmental-variables-1)
       - [Deploying](#deploying)
   - [Contributing](#contributing)
@@ -31,25 +31,25 @@ This project was built using
 
 ### Components
 
-This solutions consists of a backend server that implements a REST API, and a MongoDB database.
+This solution consists of a backend server that implements a REST API and a MongoDB database.
 
 #### Backend Server
 
 The backend server is written using the following:
   - TypeScript as language.
-  - NodeJs as runtime environment.
+  - NodeJS as runtime environment.
   - ExpressJS framework.
 
 The structure of the project can be divided into 4 layers.
 
 * **Routes**: Mapping layer. The endpoints and links to handlers are defined here.
-* **middlewares**: Validation layer. Request format and schema validation is implemented on this layer.
-* **handlers**: Request handling and business logic layer.
+* **Middlewares**: Validation layer. Request format and schema validation are implemented in this layer.
+* **Handlers**: Request handling and business logic layer.
 * **Services**: Integration with external services and the database. Should not include business logic.
 
 #### MongoDB
 
-MongoDB is used as storage service implementing the following schema. (For further information about what each property represents please refer to [CIP-26](https://cips.cardano.org/cips/cip26/)):
+MongoDB is used as a storage service, implementing the following schema: (For further information about what each property represents, please refer to [CIP-26](https://cips.cardano.org/cips/cip26/)):
 
 ```json
 {
@@ -133,9 +133,9 @@ MongoDB is used as storage service implementing the following schema. (For furth
 
 ### Considerations
 
-- The application does not manage ownership over database objects. Every user could modify every object. This kind of permissions should be implemented on further developments or by another service.
-- There is no authentication method for requests for the moment. This can be implemented on further developments too.
-- The metrics endpoint is exposed at `/metrics` and who deploys the application should decide if it should be hidden and implement a gateway to hide it if necessary. 
+- The application does not manage ownership over database objects. Every user could modify every object. These kind of permissions should be implemented on further developments or by another service.
+- There is no authentication method for requests at the moment. This can be implemented on further developments too.
+- The metrics endpoint is exposed at `/metrics` and whoever deploys the application should decide if it should be hidden and implement a gateway to hide it if necessary. 
   
 ## Getting started
 
@@ -149,7 +149,7 @@ npm run install
 
 #### Setting up database
 
-Create a MongoDB database and set the database config variables on `.env` file.
+Create a MongoDB database and set the database configuration variables in `.env` file.
 
 ```bash
 DB_PASS=secret-password
@@ -160,8 +160,8 @@ DB_NAME=dapp
 
 #### Setting environmental variables
 
-A list of environmental variables can be found in `.env.example` file.
-Copy that file, rename the copy to `.env` and replace the values with the correct ones.
+A list of environmental variables can be found in the `.env.example` file.
+Copy that file, rename the copy as `.env` and replace the values with the correct ones.
 
 #### Starting the application
 
@@ -171,11 +171,11 @@ Start the application running
 npm run dev
 ```
 
-Once the application is started swagger docs can be found at `<server-url>/docs`.
+Once the application is started, swagger docs can be found at `<server-url>/docs`.
 
 #### Running tests
 
-Running unit tests:
+Running unit tests
 
 ```bash
 npm run test:unit
@@ -185,18 +185,18 @@ npm run test:unit
 npm run test:unit:cover
 ```
 
-Running end to end tests:
+Running end to end tests
 
 ```bash
 npm run test:integration
 ```
 
-### Deploy using Docker Compose
+### Deployment using Docker Compose
 
 #### Setting environmental variables
 
-A list of environmental variables can be found in `.env.example` file.
-Copy that file, rename the copy to `.env` and replace the values with the correct ones.
+A list of environmental variables can be found in the `.env.example` file.
+Copy that file, rename the copy as `.env` and replace the values with the correct ones.
 
 #### Deploying
 
@@ -206,7 +206,7 @@ The application can be started locally via Docker Compose.
 docker-compose up
 ```
 
-Once the application is started swagger docs can be found at `<server-url>/docs`.
+Once the application is started, swagger docs can be found at `<server-url>/docs`.
 
 ## Contributing
 
