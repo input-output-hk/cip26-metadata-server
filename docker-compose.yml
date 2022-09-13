@@ -1,0 +1,32 @@
+version: '3'
+services:
+  backend:
+    build: .
+    environment:
+      - PORT=${PORT}
+      - HOST=${HOST}
+      - LOGGER_LEVEL=${LOGGER_LEVEL}
+      - DB_PASS=${DB_PASS}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_CLUSTER=${DB_CLUSTER}
+      - DB_NAME=${DB_NAME}
+    volumes:
+      - '/var/log/dapp:/var/log/dapp'
+      - '/configs/:/configs'
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - mongodb
+    links:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
+      MONGO_INITDB_DATABASE: ${DB_NAME}
