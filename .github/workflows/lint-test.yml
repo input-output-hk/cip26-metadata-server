@@ -1,0 +1,41 @@
+name: CI
+
+on: [pull_request, workflow_dispatch]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: node:16-alpine
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install python
+        run: apk add g++ make py3-pip
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: node:16
+    env:
+      NODE_ENV: test
+      HUSKY: 0
+      DB_NAME: ${{ secrets.DB_NAME }}
+      PORT: 8080
+      HOST: localhost
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install
+        run: npm ci
+
+      - name: Unit tests
+        run: printenv && npm run test:unit
+
+      - name: Integration tests
+        run: npm run test:integration
