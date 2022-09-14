@@ -201,12 +201,25 @@ Copy that file, rename the copy as `.env` and replace the values with the correc
 #### Deploying
 
 The application can be started locally via Docker Compose.
+First, set up environment variables:
+
+```
+PORT=
+HOST=
+LOGGER_LEVEL=
+DB_PASS=
+DB_USERNAME=
+DB_CLUSTER=mongodb
+DB_NAME=
+```
 
 ```bash
 docker-compose up
 ```
 
 Once the application is started, swagger docs can be found at `<server-url>/docs`.
+
+Note: This setup is intended to develop and testing purposes. It should not be used on production.
 
 ## Contributing
 
