@@ -36,7 +36,7 @@ This solution consists of a backend server that implements a REST API and a Mong
 #### Backend Server
 
 The backend server is written using the following:
-  - TypeScript as language
+  - TypeScript as language.
   - NodeJS as runtime environment.
   - ExpressJS framework.
 
