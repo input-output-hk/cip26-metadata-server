@@ -1,4 +1,5 @@
-import { Entry, Metadata } from '../../types/metadata';
+// import { Entry, Metadata } from '../../types/metadata';
+import { Metadata } from '../../types/metadata';
 import { WELL_KNOWN_PROPERTIES } from '../utils/constants';
 
 const mapMetadataProperties = (metadata: Metadata) => {
@@ -20,9 +21,15 @@ const mapGetObjectBySubjectResponse = (metadataObject: Record<string, unknown>) 
       mappedResponse[key] = value;
     } else {
       // eslint-disable-next-line unicorn/no-array-reduce
-      mappedResponse[key] = (value as Array<Entry>).reduce((higher, current) =>
-        higher?.sequenceNumber && higher.sequenceNumber > current.sequenceNumber ? higher : current
-      );
+      mappedResponse[key] = value
+      // if (key === 'DAppName') {
+      //   console.log("####", key, value)
+      //   mappedResponse[key] = value
+      // } else {
+      //   mappedResponse[key] = (value as Array<Entry>).reduce((higher, current) =>
+      //     higher?.sequenceNumber && higher.sequenceNumber > current.sequenceNumber ? higher : current
+      //   );
+      // }
     }
   }
   return mappedResponse;

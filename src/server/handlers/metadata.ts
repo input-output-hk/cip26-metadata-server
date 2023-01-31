@@ -130,6 +130,7 @@ const configure = (logger: Logger, services: Services): MetadataHandler => ({
       const propertyName = request.params.propertyName;
       const { metadataObject } = request as CustomRequest;
       delete metadataObject._id;
+      // console.log(">>>", metadataObject)
       if (!(propertyName in metadataObject)) {
         logger.log.error(
           `[${request.requestId}][Handler][getProperty] Metadata object with subject '${subject}' does not contains property '${propertyName}'`

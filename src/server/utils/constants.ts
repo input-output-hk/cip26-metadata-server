@@ -1,4 +1,4 @@
-export const DEFAULT_LOGGER_LEVEL = 'info';
+export const DEFAULT_LOGGER_LEVEL = 'debug';
 
 export const DB_CONNECTION_NEEDED_PARAMS = ['dbName', 'dbUri'];
 

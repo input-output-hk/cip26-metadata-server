@@ -12,10 +12,16 @@ export const connectToDatabase = (connectionData: CONNECTION_DATA, logger: Logge
     );
   }
   try {
+    logger.log.debug(
+      `[DB][connectToDatabase] connectionData: ${JSON.stringify(connectionData)}`
+    );
     logger.log.info(
-      `[DB][connectToDatabase] Initializing connection to ${connectionData.dbName} database`
+      `[DB][connectToDatabase] Initializing connection to ${connectionData.dbName} database...`
     );
     const client = new MongoClient(connectionData.dbUri);
+    logger.log.info(
+      `[DB][connectToDatabase] Connection to ${connectionData.dbName} successful`
+    );
     return client.db(connectionData.dbName);
   } catch (error) {
     logger.log.error(

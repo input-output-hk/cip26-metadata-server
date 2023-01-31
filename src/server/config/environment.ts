@@ -25,6 +25,7 @@ export default class Environment {
     this.dbUsername = process.env.DB_USERNAME;
     this.dbCluster = process.env.DB_CLUSTER;
     this.dbName = process.env.DB_NAME;
-    this.dbUri = `mongodb+srv://${this.dbUsername}:${this.dbPassword}@${this.dbCluster}?retryWrites=true&writeConcern=majority`;
+    // this.dbUri = `mongodb+srv://${this.dbUsername}:${this.dbPassword}@${this.dbCluster}?retryWrites=true&writeConcern=majority`;
+    this.dbUri = `mongodb://${this.dbUsername}:${this.dbPassword}@${this.dbCluster}?retryWrites=true&writeConcern=majority`;
   }
 }

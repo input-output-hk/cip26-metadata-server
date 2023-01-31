@@ -20,6 +20,8 @@ export interface DatabaseService {
 const configure = (logger: Logger, database: Db): DatabaseService => ({
   getObject: async (filters) => {
     logger.log.info('[Services][getObject] Getting object from db');
+    logger.log.debug(`[Services][getObject] DATABASE_COLLECTIONS.METADATA: ${DATABASE_COLLECTIONS.METADATA}`);
+    logger.log.debug(`[Services][getObject] filters: ${JSON.stringify(filters)}`);
     try {
       const object = await database.collection(DATABASE_COLLECTIONS.METADATA).findOne(filters);
       logger.log.info('[Services][getObject] Object retrieved from db');

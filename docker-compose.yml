@@ -12,7 +12,7 @@ services:
       - DB_NAME=${DB_NAME}
     volumes:
       - '/var/log/dapp:/var/log/dapp'
-      - '/configs/:/configs'
+      - '/dist/server/config/:/configs'
     ports:
       - ${PORT}:${PORT}
     depends_on:
